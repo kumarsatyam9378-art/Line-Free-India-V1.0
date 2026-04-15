@@ -4,7 +4,6 @@ import { useApp } from '../store/AppContext';
 import BottomNav from '../components/BottomNav';
 import ResponsiveContainer from '../components/ResponsiveContainer';
 import { triggerHaptic } from '../utils/haptics';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ALL_BUSINESS_NICHE_ROWS } from '../config/businessRegistry.data';
 import { FaSearch, FaMagic, FaHeart, FaMapMarkerAlt, FaStar, FaFire, FaCrown, FaBolt } from 'react-icons/fa';
 import { useResponsive } from '../hooks/useResponsive';
@@ -80,80 +79,8 @@ export default function CustomerHome() {
   return (
     <ResponsiveContainer variant="customer">
       <div className="h-full flex flex-col font-sans selection:bg-primary/30 relative overflow-hidden bg-black">
-        {/* 🌟 BLACK & YELLOW ANIMATED BACKGROUND */}
-        <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-          {/* Yellow Gradient Orbs on Black */}
-          <motion.div
-            animate={{
-              scale: [1, 1.4, 1],
-              rotate: [0, 180, 360],
-              opacity: [0.15, 0.3, 0.15]
-            }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-            className="absolute top-[-30%] right-[-20%] w-[80%] h-[80%] rounded-full blur-[180px]"
-            style={{ background: 'radial-gradient(circle, #FFD700, #FFA500, #FF8C00)' }}
-          />
-          <motion.div
-            animate={{
-              scale: [1.4, 1, 1.4],
-              rotate: [360, 180, 0],
-              opacity: [0.12, 0.25, 0.12]
-            }}
-            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-            className="absolute bottom-[-30%] left-[-20%] w-[70%] h-[70%] rounded-full blur-[160px]"
-            style={{ background: 'radial-gradient(circle, #FFFF00, #FFD700, #FFA500)' }}
-          />
-          <motion.div
-            animate={{
-              x: [0, 150, 0],
-              y: [0, -150, 0],
-              opacity: [0.1, 0.2, 0.1]
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-[40%] left-[40%] w-[60%] h-[60%] rounded-full blur-[140px]"
-            style={{ background: 'radial-gradient(circle, #F59E0B, #FBBF24, #FCD34D)' }}
-          />
-
-          {/* Golden Floating Particles */}
-          {[...Array(50)].map((_, i) => {
-            const yellowShades = ['#FFD700', '#FFA500', '#FFFF00', '#F59E0B', '#FBBF24'];
-            const randomYellow = yellowShades[Math.floor(Math.random() * yellowShades.length)];
-            return (
-              <motion.div
-                key={i}
-                animate={{
-                  y: [0, -200, 0],
-                  x: [0, Math.random() * 100 - 50, 0],
-                  opacity: [0, 0.8, 0],
-                  scale: [0, 1.5, 0]
-                }}
-                transition={{
-                  duration: 5 + Math.random() * 3,
-                  repeat: Infinity,
-                  delay: Math.random() * 8,
-                }}
-                className="absolute rounded-full"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  width: `${2 + Math.random() * 4}px`,
-                  height: `${2 + Math.random() * 4}px`,
-                  background: randomYellow,
-                  boxShadow: `0 0 15px ${randomYellow}`
-                }}
-              />
-            );
-          })}
-
-          {/* Grid Pattern Overlay */}
-          <div 
-            className="absolute inset-0 opacity-[0.02]"
-            style={{
-              backgroundImage: 'linear-gradient(rgba(255,215,0,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,215,0,0.3) 1px, transparent 1px)',
-              backgroundSize: '60px 60px'
-            }}
-          />
-        </div>
+        {/* Simple Gradient Background */}
+        <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-gray-900 to-black" />
 
         {/* ── Ultra Premium Fixed Header ── */}
         <div className={`${headerPadding} sticky top-0 z-30 backdrop-blur-2xl border-b border-white/10 flex-shrink-0 relative overflow-hidden`}
