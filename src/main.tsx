@@ -4,13 +4,16 @@ import { HelmetProvider } from 'react-helmet-async';
 import { ToastProvider } from './components/ToastSystem';
 import "./index.css";
 import App from "./App";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <HelmetProvider>
-      <ToastProvider>
-        <App />
-      </ToastProvider>
-    </HelmetProvider>
+    <ErrorBoundary>
+      <HelmetProvider>
+        <ToastProvider>
+          <App />
+        </ToastProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
   </StrictMode>
 );
