@@ -27,8 +27,8 @@ export function useTheme(category?: BusinessCategory, mode?: ThemeMode) {
       root.style.setProperty('--color-bg', '#FFFFFF');
       root.style.setProperty('--color-card', '#F9FAFB');
       root.style.setProperty('--color-card-2', '#F3F4F6');
-      root.style.setProperty('--color-text', '#111827');
-      root.style.setProperty('--color-text-dim', '#6B7280');
+      root.style.setProperty('--color-text', '#000000');
+      root.style.setProperty('--color-text-dim', '#374151');
       root.style.setProperty('--color-border', 'rgba(0,0,0,0.1)');
       
       let metaTheme = document.querySelector('meta[name="theme-color"]');
