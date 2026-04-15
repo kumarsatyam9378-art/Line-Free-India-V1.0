@@ -650,7 +650,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (saved === 'barber') return 'business'; // Legacy compat
     return saved as Role | null;
   });
-  const [theme, setThemeState] = useState<'light' | 'dark'>(() => (localStorage.getItem('lf_theme') as 'light' | 'dark') || 'dark');
+  const [theme, setThemeState] = useState<'light' | 'dark'>(() => (localStorage.getItem('theme-mode') as 'light' | 'dark') || 'dark');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [customerProfile, setCustomerProfileState] = useState<CustomerProfile | null>(null);
@@ -667,7 +667,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const toggleTheme = () => { 
     const newTheme = theme === 'dark' ? 'light' : 'dark'; 
     setThemeState(newTheme); 
-    localStorage.setItem('lf_theme', newTheme); 
+    localStorage.setItem('theme-mode', newTheme);
+    window.dispatchEvent(new Event('theme-change'));
   };
   const setCustomerProfile = (p: CustomerProfile | null) => { setCustomerProfileState(p); p ? localStorage.setItem('lf_customer', JSON.stringify(p)) : localStorage.removeItem('lf_customer'); };
   const setBusinessProfile = (p: BusinessProfile | null) => { setBusinessProfileState(p); p ? localStorage.setItem('lf_barber', JSON.stringify(p)) : localStorage.removeItem('lf_barber'); };
