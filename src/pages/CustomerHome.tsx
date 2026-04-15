@@ -94,8 +94,6 @@ export default function CustomerHome() {
         >
           {/* Header Shimmer Effect */}
           <div
-            animate={{ x: ['-100%', '200%'] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
             className="absolute inset-0 w-1/2"
             style={{
               background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)',
@@ -106,13 +104,9 @@ export default function CustomerHome() {
           <div className="flex items-center justify-between mb-8 relative z-10">
             <div className="space-y-2">
               <div 
-                initial={{ opacity: 0, x: -20 }} 
-                animate={{ opacity: 1, x: 0 }}
                 className="flex items-center gap-3 mb-2"
               >
                 <div
-                  animate={{ scale: [1, 1.3, 1], rotate: [0, 180, 360] }}
-                  transition={{ duration: 3, repeat: Infinity }}
                   className="w-8 h-8 rounded-2xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg shadow-primary/50"
                 >
                   <FaBolt className="text-text text-sm" />
@@ -126,9 +120,6 @@ export default function CustomerHome() {
                 </div>
               </div>
               <h1 
-                initial={{ opacity: 0, y: 10 }} 
-                animate={{ opacity: 1, y: 0 }} 
-                transition={{ delay: 0.1 }}
                 className={`${titleSize} font-black tracking-tighter relative`}
                 style={{
                   background: 'linear-gradient(135deg, #ffffff, #8B5CF6, #EC4899)',
@@ -141,10 +132,6 @@ export default function CustomerHome() {
               </h1>
             </div>
             <button 
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              whileTap={{ scale: 0.95 }}
               onClick={() => nav('/customer/profile')}
               className={`${avatarSize} rounded-[2rem] p-[3px] relative overflow-hidden`}
               style={{ 
@@ -155,8 +142,6 @@ export default function CustomerHome() {
               }}
             >
               <div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
               />
               <div className="w-full h-full rounded-[1.7rem] bg-[#0a0a0b] flex items-center justify-center overflow-hidden relative z-10">
@@ -169,18 +154,10 @@ export default function CustomerHome() {
 
           {/* 💎 Ultra Premium Search Bar */}
           <div 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.2 }}
             className="relative group"
           >
             {/* Glow Effect */}
             <div
-              animate={{
-                opacity: [0.3, 0.6, 0.3],
-                scale: [0.98, 1.02, 0.98]
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
               className="absolute -inset-1 bg-gradient-to-r from-primary via-purple-500 to-pink-500 rounded-[2rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-700"
             />
             
@@ -193,8 +170,6 @@ export default function CustomerHome() {
             >
               {/* Shimmer Effect */}
               <div
-                animate={{ x: ['-100%', '200%'] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0 w-1/2"
                 style={{
                   background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
@@ -203,10 +178,7 @@ export default function CustomerHome() {
               />
 
               <div className="flex items-center px-6 py-5 relative z-10">
-                <div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
+                <div>
                   <FaSearch className="text-primary text-xl pointer-events-none drop-shadow-[0_0_10px_rgba(139,92,246,0.8)]" />
                 </div>
                 <input
@@ -217,7 +189,6 @@ export default function CustomerHome() {
                   className="w-full bg-transparent py-1 px-5 text-base font-bold text-text outline-none placeholder:text-text/30"
                 />
                 <div
-                  whileHover={{ scale: 1.1 }}
                   className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-primary/60 text-[10px] font-black tracking-wider uppercase"
                 >
                   ⌘K
@@ -232,8 +203,6 @@ export default function CustomerHome() {
         {/* 📡 Live Pulse Feed (Following) */}
         {customerProfile?.following && customerProfile.following.length > 0 && (
           <section 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
             className="px-6 my-6"
           >
             <div className="flex items-center gap-3 mb-4">
@@ -244,9 +213,6 @@ export default function CustomerHome() {
               {allSalons.filter(s => customerProfile.following?.includes(s.uid) && s.announcement).map((followed, fi) => (
                 <button 
                   key={followed.uid}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: fi * 0.1 }}
                   onClick={() => nav(`/customer/salon/${followed.uid}`)}
                   className="w-full bg-white/[0.03] backdrop-blur-xl border border-white/5 rounded-xl p-3 flex items-center gap-3 group"
                 >
@@ -267,14 +233,10 @@ export default function CustomerHome() {
           {/* 🚀 Ultra Premium Discovery Section */}
           <section className={`${contentPadding} spatial-perspective`}>
             <div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
               className="flex items-baseline justify-between mb-8 px-1"
             >
               <div className="flex items-center gap-3">
                 <div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                   className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg shadow-primary/50"
                 >
                   <FaFire className="text-text text-lg" />
@@ -285,8 +247,6 @@ export default function CustomerHome() {
                 </div>
               </div>
               <button 
-                whileHover={{ scale: 1.05, x: 5 }}
-                whileTap={{ scale: 0.95 }}
                 onClick={() => nav('/customer/search')} 
                 className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-primary to-purple-600 text-text text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/50 border border-white/20"
                 style={{ minHeight: '44px', minWidth: '44px' }}
@@ -297,10 +257,6 @@ export default function CustomerHome() {
             
             <div className={`flex gap-6 overflow-x-auto pb-8 custom-scrollbar no-scrollbar -mx-${isMobile ? '5' : isTablet ? '8' : '10'} px-${isMobile ? '5' : isTablet ? '8' : '10'}`} style={{ touchAction: 'pan-x' }}>
               <button
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                whileHover={{ y: -12, scale: 1.05 }}
-                whileTap={{ scale: 0.92 }}
                 onClick={() => { triggerHaptic('light'); setActiveCategory('all'); }}
                 className="flex-shrink-0 w-28 flex flex-col items-center gap-4"
               >
@@ -323,21 +279,15 @@ export default function CustomerHome() {
                   {activeCategory === 'all' && (
                     <>
                       <div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
                       />
                       <div
-                        animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.6, 0.3] }}
-                        transition={{ duration: 3, repeat: Infinity }}
                         className="absolute inset-0 bg-gradient-to-br from-primary/30 to-purple-600/30 blur-2xl"
                       />
                     </>
                   )}
                   
                   <div
-                    animate={activeCategory === 'all' ? { scale: [1, 1.2, 1], rotate: [0, 360, 0] } : {}}
-                    transition={{ duration: 3, repeat: Infinity }}
                     className={`text-5xl relative z-10 ${activeCategory === 'all' ? 'drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]' : ''}`}
                   >
                     <FaMagic className={activeCategory === 'all' ? 'text-primary' : 'text-text/40'} />
@@ -354,11 +304,6 @@ export default function CustomerHome() {
                 const isActive = activeCategory === niche.id;
                 return (
                   <button
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.05 }}
-                    whileHover={{ y: -12, scale: 1.05 }}
-                    whileTap={{ scale: 0.92 }}
                     key={niche.id}
                     onClick={() => { triggerHaptic('light'); setActiveCategory(niche.id); }}
                     className="flex-shrink-0 w-28 flex flex-col items-center gap-4"
@@ -382,21 +327,15 @@ export default function CustomerHome() {
                       {isActive && (
                         <>
                           <div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
                           />
                           <div
-                            animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.6, 0.3] }}
-                            transition={{ duration: 3, repeat: Infinity }}
                             className="absolute inset-0 bg-gradient-to-br from-primary/30 to-purple-600/30 blur-2xl"
                           />
                         </>
                       )}
                       
                       <div
-                        animate={isActive ? { scale: [1, 1.2, 1] } : {}}
-                        transition={{ duration: 2, repeat: Infinity }}
                         className={`text-5xl relative z-10 ${isActive ? 'drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]' : ''}`}
                       >
                         <span className={isActive ? 'text-primary' : 'text-text/40'}>{niche.icon}</span>
@@ -418,14 +357,10 @@ export default function CustomerHome() {
           {/* 🏢 Ultra Premium Business Catalog */}
           <section className={contentPadding}>
             <div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
               className="flex items-center justify-between mb-8"
             >
               <div className="flex items-center gap-3">
                 <div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
                   className="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-lg shadow-pink-500/50"
                 >
                   <FaCrown className="text-text text-lg" />
@@ -444,8 +379,6 @@ export default function CustomerHome() {
             <div className="grid grid-cols-1 gap-6">
                 {filteredSalons.length === 0 ? (
                   <div
-                    initial={{ opacity: 0, scale: 0.9 }} 
-                    animate={{ opacity: 1, scale: 1 }}
                     className="py-24 text-center rounded-[3rem] relative overflow-hidden border-2 border-white/10"
                     style={{
                       background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))',
@@ -454,14 +387,9 @@ export default function CustomerHome() {
                     }}
                   >
                     <div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                       className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
                     />
-                    <div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
+                    <div>
                       <FaMagic className="text-6xl mx-auto mb-6 text-primary opacity-30 drop-shadow-[0_0_20px_rgba(139,92,246,0.6)]" />
                     </div>
                     <p className="font-black text-text text-2xl mb-2">No Results Found</p>
@@ -473,11 +401,6 @@ export default function CustomerHome() {
                     
                     return (
                       <div
-                        layout
-                        initial={{ opacity: 0, y: 40 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ delay: i * 0.05 }}
                         key={business.uid}
                         onClick={() => nav(`/customer/salon/${business.uid}`)}
                         className="group relative p-6 flex gap-6 cursor-pointer rounded-[3rem] border-2 border-white/10 hover:border-primary/50 transition-all duration-500 overflow-hidden"
@@ -486,12 +409,9 @@ export default function CustomerHome() {
                           backdropFilter: 'blur(40px)',
                           boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), inset 0 0 40px rgba(255, 255, 255, 0.05)'
                         }}
-                        whileHover={{ scale: 1.02, y: -5 }}
                       >
                         {/* Animated Background Effects */}
                         <div
-                          animate={{ x: ['-100%', '200%'] }}
-                          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                           className="absolute inset-0 w-1/2"
                           style={{
                             background: 'linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent)',
@@ -529,7 +449,6 @@ export default function CustomerHome() {
                           
                           {/* Rating Badge */}
                           <div 
-                            whileHover={{ scale: 1.1 }}
                             className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 to-transparent"
                           >
                             <div className="px-3 py-1.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 text-yellow-400 border border-yellow-400/30"
@@ -564,8 +483,6 @@ export default function CustomerHome() {
                             
                             {/* Favorite Button */}
                             <button
-                              whileHover={{ scale: 1.2, rotate: 10 }}
-                              whileTap={{ scale: 0.9 }}
                               onClick={e => { e.stopPropagation(); toggleFavorite(business.uid); }}
                               className="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center border-2 border-white/20 transition-all"
                               style={{
@@ -587,7 +504,6 @@ export default function CustomerHome() {
                           {/* Status & Price Tags */}
                           <div className="flex items-center gap-3 flex-wrap">
                             <div 
-                              whileHover={{ scale: 1.05 }}
                               className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-[10px] font-black uppercase tracking-widest ${
                                 business.isOpen 
                                   ? 'border-green-400/30 text-green-400' 
@@ -604,8 +520,6 @@ export default function CustomerHome() {
                               }}
                             >
                               <div 
-                                animate={business.isOpen ? { scale: [1, 1.3, 1] } : {}}
-                                transition={{ duration: 2, repeat: Infinity }}
                                 className={`w-2 h-2 rounded-full ${
                                   business.isOpen 
                                     ? 'bg-green-400 shadow-[0_0_10px_#4ade80]' 
@@ -617,7 +531,6 @@ export default function CustomerHome() {
                             
                             {business.services?.length > 0 && (
                               <div
-                                whileHover={{ scale: 1.05 }}
                                 className="px-4 py-2 rounded-xl border-2 border-primary/30 text-primary text-[10px] font-black uppercase tracking-widest"
                                 style={{
                                   background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2))',
