@@ -34,34 +34,17 @@ export default defineConfig({
     })
   ],
 
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
+    exclude: ['lucide-react']
+  },
+
   build: {
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            // React core - must be separate
-            if (id.includes('react/') || id.includes('react-dom/')) {
-              return 'react-core';
-            }
-            // React ecosystem
-            if (id.includes('react-router') || id.includes('react-helmet')) {
-              return 'react-vendor';
-            }
-            // Lucide icons - separate chunk to avoid bundling issues
-            if (id.includes('lucide-react')) {
-              return 'icons';
-            }
-            // Firebase
-            if (id.includes('firebase')) {
-              return 'firebase';
-            }
-            // UI libraries
-            if (id.includes('framer-motion') || id.includes('recharts') || id.includes('leaflet')) {
-              return 'ui';
-            }
-            // Other vendors
-            return 'vendor';
-          }
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'lucide': ['lucide-react']
         }
       }
     },
@@ -77,7 +60,6 @@ export default defineConfig({
 
   // 🔥 IMPORTANT (ngrok fix)
   server: {
-    host: true,
-    allowedHosts: 'all'
+    host: true
   }
 });
