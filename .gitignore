@@ -45,6 +45,12 @@ firebase-debug.*.log
 coverage/
 .nyc_output/
 
+# Test output files
+test-output.json
+test-output.txt
+test-results.json
+*.tsbuildinfo
+
 # Temporary files
 *.tmp
 *.temp
