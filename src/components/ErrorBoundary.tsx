@@ -1,4 +1,4 @@
-import { Component, ReactNode } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 /**
  * Feature #90: Error Boundary & Crash Recovery
@@ -28,6 +28,10 @@ export default class ErrorBoundary extends Component<Props, State> {
   handleRetry = () => {
     this.setState({ hasError: false, error: null });
   };
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('ErrorBoundary caught an app crash:', error, errorInfo);
+  }
 
   render() {
     if (this.state.hasError) {
