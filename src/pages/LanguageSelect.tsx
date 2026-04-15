@@ -21,7 +21,7 @@ export default function LanguageSelect() {
   const select = (l: Lang) => {
     setLang(l);
     setToast(l === 'en' ? '✅ English Selected' : '✅ हिंदी चयनित');
-    setTimeout(() => nav('/role'), 1000);
+    setTimeout(() => nav('/theme'), 1000);
   };
 
   return (

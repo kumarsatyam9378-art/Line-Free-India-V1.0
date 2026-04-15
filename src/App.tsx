@@ -9,6 +9,7 @@ import Sidebar from './components/Sidebar';
 
 // ─── Lazy-loaded Pages ───
 const LanguageSelect = lazy(() => import('./pages/LanguageSelect'));
+const ThemeSelect = lazy(() => import('./pages/ThemeSelect'));
 const RoleSelect = lazy(() => import('./pages/RoleSelect'));
 const PremiumAnimatedAuth = lazy(() => import('./pages/PremiumAnimatedAuth'));
 const CustomerProfileSetup = lazy(() => import('./pages/CustomerProfileSetup'));
@@ -175,6 +176,7 @@ function AppRoutes() {
         }>
           <Routes>
             <Route path="/" element={<LanguageSelect />} />
+            <Route path="/theme" element={<ThemeSelect />} />
             <Route path="/role" element={<RoleSelect />} />
 
           <Route path="/customer/community/:id" element={<CommunityBoard />} />
