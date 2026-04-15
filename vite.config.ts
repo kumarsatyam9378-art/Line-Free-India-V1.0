@@ -29,7 +29,7 @@ export default defineConfig({
         ]
       },
       workbox: {
-        maximumFileSizeToCacheInBytes: 3145728 // 3MB temporary limit
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024 // 6MB limit for large bundles
       }
     })
   ],

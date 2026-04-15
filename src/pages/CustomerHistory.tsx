@@ -142,8 +142,8 @@ export default function CustomerHistory() {
           </div>
         )}
         </div>
+        <BottomNav />
       </div>
-      <BottomNav />
     </ResponsiveContainer>
   );
 }

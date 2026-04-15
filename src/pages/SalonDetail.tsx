@@ -1154,69 +1154,6 @@ export default function SalonDetail() {
           </div>
         )}
 
-        {/* 🛍️ Products Section */}
-        <div className="mt-12 mb-12">
-          <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
-            <span>🛍️</span>
-            <span>Products</span>
-          </h2>
-          
-          {productsLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : products.length === 0 ? (
-            <div className="elite-glass rounded-[2.5rem] p-12 text-center border-white/5">
-              <div className="w-20 h-20 rounded-full bg-text-dim/10 flex items-center justify-center mx-auto mb-4">
-                <span className="text-4xl opacity-40">🛍️</span>
-              </div>
-              <p className="text-text-dim font-bold">No products available</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              {products.map((product) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="elite-glass rounded-[2rem] overflow-hidden border-white/5"
-                >
-                  <div className="relative h-32 bg-card-2">
-                    {product.imageURL ? (
-                      <img src={product.imageURL} alt={product.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-4xl opacity-20">📦</span>
-                      </div>
-                    )}
-                    {product.stock === 0 && (
-                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                        <span className="text-xs font-black uppercase px-3 py-1 rounded-full bg-danger text-white">Out of Stock</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-black text-sm mb-1 line-clamp-1">{product.name}</h3>
-                    {product.description && (
-                      <p className="text-text-dim text-xs mb-3 line-clamp-2">{product.description}</p>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-black text-primary">₹{product.price}</span>
-                      {product.stock > 0 && product.stock <= 5 && (
-                        <span className="text-[9px] font-black uppercase px-2 py-1 rounded-full bg-warning/20 text-warning">Low Stock</span>
-                      )}
-                      {product.stock > 5 && (
-                        <span className="text-[9px] font-black uppercase px-2 py-1 rounded-full bg-success/20 text-success">In Stock</span>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
       {showConfirm && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-md flex items-end justify-center z-50 animate-fadeIn">
           <div className="elite-glass w-full max-w-2xl rounded-t-3xl border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.3)] animate-slideUp overflow-hidden spatial-card">

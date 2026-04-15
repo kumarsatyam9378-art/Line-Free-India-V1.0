@@ -14,6 +14,8 @@ const PremiumAnimatedAuth = lazy(() => import('./pages/PremiumAnimatedAuth'));
 const CustomerProfileSetup = lazy(() => import('./pages/CustomerProfileSetup'));
 const BarberProfileSetup = lazy(() => import('./pages/BarberProfileSetup'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const SecretAdminPanel = lazy(() => import('./pages/SecretAdminPanel'));
+const GetMyUID = lazy(() => import('./pages/GetMyUID'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
 const SalonQRPage = lazy(() => import('./pages/SalonQRPage'));
 
@@ -186,6 +188,12 @@ function AppRoutes() {
 
           {/* Admin */}
           <Route path="/admin/dashboard" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+          
+          {/* 🔐 Secret Admin Panel - Hidden Route */}
+          <Route path="/secret-admin-x9z2k" element={<SecretAdminPanel />} />
+          
+          {/* 🔑 Get My UID Helper */}
+          <Route path="/get-my-uid" element={<GetMyUID />} />
 
           {/* ═══ Customer Side ═══ */}
           <Route path="/customer/home" element={<AuthGuard requiredRole="customer"><CustomerHome /></AuthGuard>} />
