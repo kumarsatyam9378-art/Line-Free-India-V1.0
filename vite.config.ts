@@ -37,15 +37,24 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
-          'ui': ['framer-motion', 'recharts', 'leaflet', 'react-leaflet'],
-          'utils': ['jspdf', 'qrcode.react', 'clsx', 'tailwind-merge']
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'react-vendor';
+            }
+            if (id.includes('firebase')) {
+              return 'firebase';
+            }
+            if (id.includes('framer-motion') || id.includes('recharts') || id.includes('leaflet')) {
+              return 'ui';
+            }
+            return 'vendor';
+          }
         }
       }
     },
-    chunkSizeWarningLimit: 500
+    chunkSizeWarningLimit: 1000,
+    sourcemap: false
   },
 
   resolve: {
