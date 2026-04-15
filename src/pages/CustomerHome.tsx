@@ -115,10 +115,10 @@ export default function CustomerHome() {
                   transition={{ duration: 3, repeat: Infinity }}
                   className="w-8 h-8 rounded-2xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg shadow-primary/50"
                 >
-                  <FaBolt className="text-white text-sm" />
+                  <FaBolt className="text-text text-sm" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] block">{greeting}</span>
+                  <span className="text-[10px] font-black text-text/50 uppercase tracking-[0.2em] block">{greeting}</span>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_10px_#4ade80]" />
                     <span className="text-[9px] font-bold text-green-400 uppercase tracking-wider">Live Now</span>
@@ -214,7 +214,7 @@ export default function CustomerHome() {
                   placeholder="Discover premium excellence..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent py-1 px-5 text-base font-bold text-white outline-none placeholder:text-white/30"
+                  className="w-full bg-transparent py-1 px-5 text-base font-bold text-text outline-none placeholder:text-text/30"
                 />
                 <div
                   whileHover={{ scale: 1.1 }}
@@ -277,18 +277,18 @@ export default function CustomerHome() {
                   transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                   className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg shadow-primary/50"
                 >
-                  <FaFire className="text-white text-lg" />
+                  <FaFire className="text-text text-lg" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black text-white uppercase tracking-wider">Discovery Portal</h2>
-                  <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Explore Premium Services</p>
+                  <h2 className="text-sm font-black text-text uppercase tracking-wider">Discovery Portal</h2>
+                  <p className="text-[9px] font-bold text-text/40 uppercase tracking-widest">Explore Premium Services</p>
                 </div>
               </div>
               <button 
                 whileHover={{ scale: 1.05, x: 5 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => nav('/customer/search')} 
-                className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-primary to-purple-600 text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/50 border border-white/20"
+                className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-primary to-purple-600 text-text text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/50 border border-white/20"
                 style={{ minHeight: '44px', minWidth: '44px' }}
               >
                 View All →
@@ -340,10 +340,10 @@ export default function CustomerHome() {
                     transition={{ duration: 3, repeat: Infinity }}
                     className={`text-5xl relative z-10 ${activeCategory === 'all' ? 'drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]' : ''}`}
                   >
-                    <FaMagic className={activeCategory === 'all' ? 'text-primary' : 'text-white/40'} />
+                    <FaMagic className={activeCategory === 'all' ? 'text-primary' : 'text-text/40'} />
                   </div>
                   <span className={`text-[10px] font-black uppercase tracking-widest text-center px-2 relative z-10 ${
-                    activeCategory === 'all' ? 'text-primary' : 'text-white/40'
+                    activeCategory === 'all' ? 'text-primary' : 'text-text/40'
                   }`}>
                     Trending
                   </span>
@@ -399,10 +399,10 @@ export default function CustomerHome() {
                         transition={{ duration: 2, repeat: Infinity }}
                         className={`text-5xl relative z-10 ${isActive ? 'drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]' : ''}`}
                       >
-                        <span className={isActive ? 'text-primary' : 'text-white/40'}>{niche.icon}</span>
+                        <span className={isActive ? 'text-primary' : 'text-text/40'}>{niche.icon}</span>
                       </div>
                       <span className={`text-[10px] font-black uppercase tracking-widest text-center truncate w-full px-2 relative z-10 ${
-                        isActive ? 'text-primary' : 'text-white/40'
+                        isActive ? 'text-primary' : 'text-text/40'
                       }`}>
                         {niche.label.split('/')[0]}
                       </span>
@@ -428,13 +428,13 @@ export default function CustomerHome() {
                   transition={{ duration: 2, repeat: Infinity }}
                   className="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-lg shadow-pink-500/50"
                 >
-                  <FaCrown className="text-white text-lg" />
+                  <FaCrown className="text-text text-lg" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black uppercase tracking-wider text-white">
+                  <h2 className="text-sm font-black uppercase tracking-wider text-text">
                     {searchQuery ? 'Search Results' : 'Premium Partners'}
                   </h2>
-                  <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">
+                  <p className="text-[9px] font-bold text-text/40 uppercase tracking-widest">
                     {filteredSalons.length} Elite Businesses
                   </p>
                 </div>
@@ -464,8 +464,8 @@ export default function CustomerHome() {
                     >
                       <FaMagic className="text-6xl mx-auto mb-6 text-primary opacity-30 drop-shadow-[0_0_20px_rgba(139,92,246,0.6)]" />
                     </div>
-                    <p className="font-black text-white text-2xl mb-2">No Results Found</p>
-                    <p className="text-xs text-white/40 tracking-widest uppercase font-black">Try adjusting your filters</p>
+                    <p className="font-black text-text text-2xl mb-2">No Results Found</p>
+                    <p className="text-xs text-text/40 tracking-widest uppercase font-black">Try adjusting your filters</p>
                   </div>
                 ) : (
                   filteredSalons.map((business, i) => {
@@ -549,14 +549,14 @@ export default function CustomerHome() {
                         <div className="flex-1 flex flex-col justify-center min-w-0 relative z-10">
                           <div className="flex items-start justify-between gap-4 mb-3">
                             <div className="flex-1 min-w-0">
-                              <h3 className={`font-black text-white ${isMobile ? 'text-lg' : 'text-xl'} leading-tight tracking-tight group-hover:text-primary transition-colors mb-2 uppercase`}
+                              <h3 className={`font-black text-text ${isMobile ? 'text-lg' : 'text-xl'} leading-tight tracking-tight group-hover:text-primary transition-colors mb-2 uppercase`}
                                 style={{
                                   textShadow: '0 0 20px rgba(139, 92, 246, 0.3)'
                                 }}
                               >
                                 {business.businessName}
                               </h3>
-                              <div className="flex items-center gap-2 text-[10px] font-bold text-white/50 uppercase tracking-wider mb-3">
+                              <div className="flex items-center gap-2 text-[10px] font-bold text-text/50 uppercase tracking-wider mb-3">
                                 <FaMapMarkerAlt className="text-primary" />
                                 <span className="truncate">{business.location || 'Universal Platform'}</span>
                               </div>
@@ -591,7 +591,7 @@ export default function CustomerHome() {
                               className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-[10px] font-black uppercase tracking-widest ${
                                 business.isOpen 
                                   ? 'border-green-400/30 text-green-400' 
-                                  : 'border-white/10 text-white/30'
+                                  : 'border-white/10 text-text/30'
                               }`}
                               style={{
                                 background: business.isOpen
@@ -643,3 +643,4 @@ export default function CustomerHome() {
   </ResponsiveContainer>
   );
 }
+
