@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from './store/AppContext';
 import PageTransition from './components/PageTransition';
@@ -6,6 +6,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import AdvancedSplashScreen from './components/AdvancedSplashScreen';
 import TokenNotificationListener from './components/TokenNotificationListener';
 import Sidebar from './components/Sidebar';
+import { useTheme, getThemeMode } from './hooks/useTheme';
 
 // ─── Lazy-loaded Pages ───
 const LanguageSelect = lazy(() => import('./pages/LanguageSelect'));
@@ -148,6 +149,18 @@ function AuthGuard({ children, requiredRole }: { children: React.ReactNode; requ
 function AppRoutes() {
   const { loading } = useApp();
   const location = useLocation();
+  
+  // Apply theme globally
+  const [themeMode, setThemeMode] = useState(getThemeMode());
+  useTheme(undefined, themeMode);
+  
+  useEffect(() => {
+    const handleThemeChange = () => {
+      setThemeMode(getThemeMode());
+    };
+    window.addEventListener('theme-change', handleThemeChange);
+    return () => window.removeEventListener('theme-change', handleThemeChange);
+  }, []);
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-bg">

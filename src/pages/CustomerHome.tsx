@@ -78,15 +78,18 @@ export default function CustomerHome() {
 
   return (
     <ResponsiveContainer variant="customer">
-      <div className="h-full flex flex-col font-sans selection:bg-primary/30 relative overflow-hidden bg-black">
+      <div className="h-full flex flex-col font-sans selection:bg-primary/30 relative overflow-hidden" style={{ backgroundColor: 'var(--color-bg)' }}>
         {/* Simple Gradient Background */}
-        <div className="fixed inset-0 -z-10 bg-gradient-to-br from-black via-gray-900 to-black" />
+        <div className="fixed inset-0 -z-10" style={{ 
+          background: 'linear-gradient(to bottom right, var(--color-bg), var(--color-card), var(--color-bg))' 
+        }} />
 
         {/* ── Ultra Premium Fixed Header ── */}
-        <div className={`${headerPadding} sticky top-0 z-30 backdrop-blur-2xl border-b border-white/10 flex-shrink-0 relative overflow-hidden`}
+        <div className={`${headerPadding} sticky top-0 z-30 backdrop-blur-2xl flex-shrink-0 relative overflow-hidden`}
           style={{
-            background: 'linear-gradient(135deg, rgba(15, 15, 25, 0.85), rgba(30, 15, 45, 0.85))',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
+            background: 'var(--color-card)',
+            borderBottom: '1px solid var(--color-border)',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)'
           }}
         >
           {/* Header Shimmer Effect */}
