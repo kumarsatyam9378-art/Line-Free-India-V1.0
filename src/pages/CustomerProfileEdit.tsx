@@ -320,17 +320,17 @@ export default function CustomerProfileEdit() {
               <span className="absolute text-[8px] font-black text-primary group-hover:scale-110 transition-transform">{customerProfile?.currentStreak || 0}</span>
             </div>
           </button>
-          <button onClick={() => nav('/customer/history')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 hover:border-primary/30 transition-all">
+          <button onClick={() => nav('/customer/history')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 hover:border-primary/30 transition-all text-text">
             <span>📋</span> Visit History
           </button>
-          <button onClick={() => nav('/customer/notifications')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 hover:border-primary/30 transition-all relative">
+          <button onClick={() => nav('/customer/notifications')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 hover:border-primary/30 transition-all relative text-text">
             <span>🔔</span> Notifications
             {unreadCount > 0 && <span className="absolute top-2 right-2 w-4 h-4 bg-danger rounded-full text-[9px] text-white flex items-center justify-center font-bold">{unreadCount > 9 ? '9+' : unreadCount}</span>}
           </button>
-          <button onClick={() => nav('/customer/subscription')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 hover:border-primary/30 transition-all">
+          <button onClick={() => nav('/customer/subscription')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 hover:border-primary/30 transition-all text-text">
             <span>⭐</span> Subscription
           </button>
-          <button onClick={toggleTheme} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 hover:border-primary/30 transition-all">
+          <button onClick={toggleTheme} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 hover:border-primary/30 transition-all text-text">
             <span>{theme === 'dark' ? '☀️' : '🌙'}</span> {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
           </button>
         </div>
@@ -352,7 +352,7 @@ export default function CustomerProfileEdit() {
             <input value={deleteInput} onChange={e => setDeleteInput(e.target.value)} placeholder="Type DELETE" className="input-field mb-3 border-danger/30 text-center font-bold tracking-widest" />
             {deleteError && <p className="text-danger text-xs mb-2 text-center">{deleteError}</p>}
             <div className="flex gap-2">
-              <button onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); setDeleteError(''); }} className="flex-1 p-3 rounded-xl border border-border text-sm">Cancel</button>
+              <button onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); setDeleteError(''); }} className="flex-1 p-3 rounded-xl border border-border text-sm text-text">Cancel</button>
               <button onClick={handleDeleteAccount} disabled={deleteInput !== 'DELETE' || deleting}
                 className="flex-1 p-3 rounded-xl bg-danger text-white text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2">
                 {deleting ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Deleting...</> : '🗑️ Delete'}

@@ -442,23 +442,23 @@ export default function BarberProfile() {
 
         {/* Quick Links */}
         <div className="grid grid-cols-2 gap-3 mb-5">
-          <button onClick={handleShare} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2">
+          <button onClick={handleShare} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 text-text">
             <span>📱</span> Share Salon
           </button>
-          <button onClick={() => nav('/barber/dashboard')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2">
+          <button onClick={() => nav('/barber/dashboard')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 text-text">
             <span>🎯</span> Dashboard
           </button>
-          <button onClick={() => nav('/barber/qr')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2">
+          <button onClick={() => nav('/barber/qr')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 text-text">
             <span>🔲</span> My QR Code
           </button>
-          <button onClick={() => nav('/barber/analytics')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2">
+          <button onClick={() => nav('/barber/analytics')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 text-text">
             <span>📊</span> Analytics
           </button>
-          <button onClick={() => nav('/barber/notifications')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 relative">
+          <button onClick={() => nav('/barber/notifications')} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 relative text-text">
             <span>🔔</span> Notifications
             {unreadCount > 0 && <span className="absolute top-2 right-2 w-4 h-4 bg-danger rounded-full text-[9px] text-white flex items-center justify-center">{unreadCount}</span>}
           </button>
-          <button onClick={toggleTheme} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2">
+          <button onClick={toggleTheme} className="p-3 rounded-xl border border-border bg-card text-sm font-medium flex items-center gap-2 text-text">
             <span>{theme === 'dark' ? '☀️' : '🌙'}</span> {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
           </button>
         </div>
@@ -479,7 +479,7 @@ export default function BarberProfile() {
             <input value={deleteInput} onChange={e => setDeleteInput(e.target.value)} placeholder="Type DELETE" className="input-field mb-3 border-danger/30 text-center font-bold tracking-widest" />
             {deleteError && <p className="text-danger text-xs mb-2 text-center">{deleteError}</p>}
             <div className="flex gap-2">
-              <button onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); }} className="flex-1 p-3 rounded-xl border border-border text-sm">Cancel</button>
+              <button onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); }} className="flex-1 p-3 rounded-xl border border-border text-sm text-text">Cancel</button>
               <button onClick={handleDeleteAccount} disabled={deleteInput !== 'DELETE' || deleting}
                 className="flex-1 p-3 rounded-xl bg-danger text-white text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2">
                 {deleting ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Deleting...</> : '🗑️ Delete'}
