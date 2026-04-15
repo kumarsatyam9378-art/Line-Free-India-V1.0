@@ -93,7 +93,7 @@ export default function CustomerHome() {
           }}
         >
           {/* Header Shimmer Effect */}
-          <motion.div
+          <div
             animate={{ x: ['-100%', '200%'] }}
             transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
             className="absolute inset-0 w-1/2"
@@ -105,18 +105,18 @@ export default function CustomerHome() {
 
           <div className="flex items-center justify-between mb-8 relative z-10">
             <div className="space-y-2">
-              <motion.div 
+              <div 
                 initial={{ opacity: 0, x: -20 }} 
                 animate={{ opacity: 1, x: 0 }}
                 className="flex items-center gap-3 mb-2"
               >
-                <motion.div
+                <div
                   animate={{ scale: [1, 1.3, 1], rotate: [0, 180, 360] }}
                   transition={{ duration: 3, repeat: Infinity }}
                   className="w-8 h-8 rounded-2xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg shadow-primary/50"
                 >
                   <FaBolt className="text-white text-sm" />
-                </motion.div>
+                </div>
                 <div>
                   <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] block">{greeting}</span>
                   <div className="flex items-center gap-2">
@@ -124,8 +124,8 @@ export default function CustomerHome() {
                     <span className="text-[9px] font-bold text-green-400 uppercase tracking-wider">Live Now</span>
                   </div>
                 </div>
-              </motion.div>
-              <motion.h1 
+              </div>
+              <h1 
                 initial={{ opacity: 0, y: 10 }} 
                 animate={{ opacity: 1, y: 0 }} 
                 transition={{ delay: 0.1 }}
@@ -138,9 +138,9 @@ export default function CustomerHome() {
                 }}
               >
                 {customerProfile?.name?.split(' ')[0] || user?.displayName?.split(' ')[0] || 'Explorer'}
-              </motion.h1>
+              </h1>
             </div>
-            <motion.button 
+            <button 
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               whileHover={{ scale: 1.1, rotate: 5 }}
@@ -154,7 +154,7 @@ export default function CustomerHome() {
                 boxShadow: '0 10px 40px rgba(139, 92, 246, 0.5)'
               }}
             >
-              <motion.div
+              <div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
@@ -164,18 +164,18 @@ export default function CustomerHome() {
                   ? <img src={customerProfile?.photoURL || user?.photoURL || ''} className="w-full h-full object-cover" alt="" />
                   : <span className="text-3xl">⚡</span>}
               </div>
-            </motion.button>
+            </button>
           </div>
 
           {/* 💎 Ultra Premium Search Bar */}
-          <motion.div 
+          <div 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.2 }}
             className="relative group"
           >
             {/* Glow Effect */}
-            <motion.div
+            <div
               animate={{
                 opacity: [0.3, 0.6, 0.3],
                 scale: [0.98, 1.02, 0.98]
@@ -192,7 +192,7 @@ export default function CustomerHome() {
               }}
             >
               {/* Shimmer Effect */}
-              <motion.div
+              <div
                 animate={{ x: ['-100%', '200%'] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0 w-1/2"
@@ -203,12 +203,12 @@ export default function CustomerHome() {
               />
 
               <div className="flex items-center px-6 py-5 relative z-10">
-                <motion.div
+                <div
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
                   <FaSearch className="text-primary text-xl pointer-events-none drop-shadow-[0_0_10px_rgba(139,92,246,0.8)]" />
-                </motion.div>
+                </div>
                 <input
                   type="text"
                   placeholder="Discover premium excellence..."
@@ -216,22 +216,22 @@ export default function CustomerHome() {
                   onChange={e => setSearchQuery(e.target.value)}
                   className="w-full bg-transparent py-1 px-5 text-base font-bold text-white outline-none placeholder:text-white/30"
                 />
-                <motion.div
+                <div
                   whileHover={{ scale: 1.1 }}
                   className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-primary/60 text-[10px] font-black tracking-wider uppercase"
                 >
                   ⌘K
-                </motion.div>
+                </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
         
         {/* ── Scrollable Content ── */}
         <div className="flex-1 overflow-y-auto custom-scrollbar pb-40">
         {/* 📡 Live Pulse Feed (Following) */}
         {customerProfile?.following && customerProfile.following.length > 0 && (
-          <motion.section 
+          <section 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="px-6 my-6"
@@ -242,7 +242,7 @@ export default function CustomerHome() {
             </div>
             <div className="flex flex-col gap-2">
               {allSalons.filter(s => customerProfile.following?.includes(s.uid) && s.announcement).map((followed, fi) => (
-                <motion.button 
+                <button 
                   key={followed.uid}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -257,34 +257,34 @@ export default function CustomerHome() {
                     <p className="text-[9px] font-black text-text uppercase tracking-widest truncate mb-0.5">{followed.businessName}</p>
                     <p className="text-[10px] text-text-dim truncate italic opacity-60">"{followed.announcement}"</p>
                   </div>
-                </motion.button>
+                </button>
               ))}
             </div>
-          </motion.section>
+          </section>
         )}
 
         <div className="space-y-10 pt-4">
           {/* 🚀 Ultra Premium Discovery Section */}
           <section className={`${contentPadding} spatial-perspective`}>
-            <motion.div 
+            <div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex items-baseline justify-between mb-8 px-1"
             >
               <div className="flex items-center gap-3">
-                <motion.div
+                <div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                   className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg shadow-primary/50"
                 >
                   <FaFire className="text-white text-lg" />
-                </motion.div>
+                </div>
                 <div>
                   <h2 className="text-sm font-black text-white uppercase tracking-wider">Discovery Portal</h2>
                   <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Explore Premium Services</p>
                 </div>
               </div>
-              <motion.button 
+              <button 
                 whileHover={{ scale: 1.05, x: 5 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => nav('/customer/search')} 
@@ -292,11 +292,11 @@ export default function CustomerHome() {
                 style={{ minHeight: '44px', minWidth: '44px' }}
               >
                 View All →
-              </motion.button>
-            </motion.div>
+              </button>
+            </div>
             
             <div className={`flex gap-6 overflow-x-auto pb-8 custom-scrollbar no-scrollbar -mx-${isMobile ? '5' : isTablet ? '8' : '10'} px-${isMobile ? '5' : isTablet ? '8' : '10'}`} style={{ touchAction: 'pan-x' }}>
-              <motion.button
+              <button
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 whileHover={{ y: -12, scale: 1.05 }}
@@ -322,12 +322,12 @@ export default function CustomerHome() {
                   {/* Animated Background */}
                   {activeCategory === 'all' && (
                     <>
-                      <motion.div
+                      <div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
                       />
-                      <motion.div
+                      <div
                         animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.6, 0.3] }}
                         transition={{ duration: 3, repeat: Infinity }}
                         className="absolute inset-0 bg-gradient-to-br from-primary/30 to-purple-600/30 blur-2xl"
@@ -335,25 +335,25 @@ export default function CustomerHome() {
                     </>
                   )}
                   
-                  <motion.div
+                  <div
                     animate={activeCategory === 'all' ? { scale: [1, 1.2, 1], rotate: [0, 360, 0] } : {}}
                     transition={{ duration: 3, repeat: Infinity }}
                     className={`text-5xl relative z-10 ${activeCategory === 'all' ? 'drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]' : ''}`}
                   >
                     <FaMagic className={activeCategory === 'all' ? 'text-primary' : 'text-white/40'} />
-                  </motion.div>
+                  </div>
                   <span className={`text-[10px] font-black uppercase tracking-widest text-center px-2 relative z-10 ${
                     activeCategory === 'all' ? 'text-primary' : 'text-white/40'
                   }`}>
                     Trending
                   </span>
                 </div>
-              </motion.button>
+              </button>
 
               {ALL_BUSINESS_NICHE_ROWS.map((niche, i) => {
                 const isActive = activeCategory === niche.id;
                 return (
-                  <motion.button
+                  <button
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: i * 0.05 }}
@@ -381,12 +381,12 @@ export default function CustomerHome() {
                       {/* Animated Background */}
                       {isActive && (
                         <>
-                          <motion.div
+                          <div
                             animate={{ rotate: 360 }}
                             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
                           />
-                          <motion.div
+                          <div
                             animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.6, 0.3] }}
                             transition={{ duration: 3, repeat: Infinity }}
                             className="absolute inset-0 bg-gradient-to-br from-primary/30 to-purple-600/30 blur-2xl"
@@ -394,20 +394,20 @@ export default function CustomerHome() {
                         </>
                       )}
                       
-                      <motion.div
+                      <div
                         animate={isActive ? { scale: [1, 1.2, 1] } : {}}
                         transition={{ duration: 2, repeat: Infinity }}
                         className={`text-5xl relative z-10 ${isActive ? 'drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]' : ''}`}
                       >
                         <span className={isActive ? 'text-primary' : 'text-white/40'}>{niche.icon}</span>
-                      </motion.div>
+                      </div>
                       <span className={`text-[10px] font-black uppercase tracking-widest text-center truncate w-full px-2 relative z-10 ${
                         isActive ? 'text-primary' : 'text-white/40'
                       }`}>
                         {niche.label.split('/')[0]}
                       </span>
                     </div>
-                  </motion.button>
+                  </button>
                 );
               })}
             </div>
@@ -417,19 +417,19 @@ export default function CustomerHome() {
 
           {/* 🏢 Ultra Premium Business Catalog */}
           <section className={contentPadding}>
-            <motion.div 
+            <div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex items-center justify-between mb-8"
             >
               <div className="flex items-center gap-3">
-                <motion.div
+                <div
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                   className="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-lg shadow-pink-500/50"
                 >
                   <FaCrown className="text-white text-lg" />
-                </motion.div>
+                </div>
                 <div>
                   <h2 className="text-sm font-black uppercase tracking-wider text-white">
                     {searchQuery ? 'Search Results' : 'Premium Partners'}
@@ -439,12 +439,11 @@ export default function CustomerHome() {
                   </p>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             <div className="grid grid-cols-1 gap-6">
-              <AnimatePresence mode="popLayout">
                 {filteredSalons.length === 0 ? (
-                  <motion.div
+                  <div
                     initial={{ opacity: 0, scale: 0.9 }} 
                     animate={{ opacity: 1, scale: 1 }}
                     className="py-24 text-center rounded-[3rem] relative overflow-hidden border-2 border-white/10"
@@ -454,26 +453,26 @@ export default function CustomerHome() {
                       boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
                     }}
                   >
-                    <motion.div
+                    <div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                       className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
                     />
-                    <motion.div
+                    <div
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
                       <FaMagic className="text-6xl mx-auto mb-6 text-primary opacity-30 drop-shadow-[0_0_20px_rgba(139,92,246,0.6)]" />
-                    </motion.div>
+                    </div>
                     <p className="font-black text-white text-2xl mb-2">No Results Found</p>
                     <p className="text-xs text-white/40 tracking-widest uppercase font-black">Try adjusting your filters</p>
-                  </motion.div>
+                  </div>
                 ) : (
                   filteredSalons.map((business, i) => {
                     const imageSize = isMobile ? 'w-28 h-28' : isTablet ? 'w-32 h-32' : 'w-36 h-36';
                     
                     return (
-                      <motion.div
+                      <div
                         layout
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -490,7 +489,7 @@ export default function CustomerHome() {
                         whileHover={{ scale: 1.02, y: -5 }}
                       >
                         {/* Animated Background Effects */}
-                        <motion.div
+                        <div
                           animate={{ x: ['-100%', '200%'] }}
                           transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                           className="absolute inset-0 w-1/2"
@@ -499,7 +498,7 @@ export default function CustomerHome() {
                             transform: 'skewX(-20deg)'
                           }}
                         />
-                        <motion.div
+                        <div
                           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                           style={{
                             background: 'radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.1), transparent 70%)'
@@ -529,7 +528,7 @@ export default function CustomerHome() {
                             : <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">✨</div>}
                           
                           {/* Rating Badge */}
-                          <motion.div 
+                          <div 
                             whileHover={{ scale: 1.1 }}
                             className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 to-transparent"
                           >
@@ -543,7 +542,7 @@ export default function CustomerHome() {
                               <FaStar className="text-yellow-400 drop-shadow-[0_0_5px_rgba(234,179,8,0.8)]" />
                               {business.rating || 4.9}
                             </div>
-                          </motion.div>
+                          </div>
                         </div>
 
                         {/* Business Info */}
@@ -564,7 +563,7 @@ export default function CustomerHome() {
                             </div>
                             
                             {/* Favorite Button */}
-                            <motion.button
+                            <button
                               whileHover={{ scale: 1.2, rotate: 10 }}
                               whileTap={{ scale: 0.9 }}
                               onClick={e => { e.stopPropagation(); toggleFavorite(business.uid); }}
@@ -582,12 +581,12 @@ export default function CustomerHome() {
                               }}
                             >
                               <span className="text-2xl">{isFavorite(business.uid) ? '❤️' : '🤍'}</span>
-                            </motion.button>
+                            </button>
                           </div>
                           
                           {/* Status & Price Tags */}
                           <div className="flex items-center gap-3 flex-wrap">
-                            <motion.div 
+                            <div 
                               whileHover={{ scale: 1.05 }}
                               className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-[10px] font-black uppercase tracking-widest ${
                                 business.isOpen 
@@ -604,7 +603,7 @@ export default function CustomerHome() {
                                   : 'none'
                               }}
                             >
-                              <motion.div 
+                              <div 
                                 animate={business.isOpen ? { scale: [1, 1.3, 1] } : {}}
                                 transition={{ duration: 2, repeat: Infinity }}
                                 className={`w-2 h-2 rounded-full ${
@@ -614,10 +613,10 @@ export default function CustomerHome() {
                                 }`} 
                               />
                               {business.isOpen ? 'Live Now' : 'Offline'}
-                            </motion.div>
+                            </div>
                             
                             {business.services?.length > 0 && (
-                              <motion.div
+                              <div
                                 whileHover={{ scale: 1.05 }}
                                 className="px-4 py-2 rounded-xl border-2 border-primary/30 text-primary text-[10px] font-black uppercase tracking-widest"
                                 style={{
@@ -627,15 +626,14 @@ export default function CustomerHome() {
                                 }}
                               >
                                 From ₹{Math.min(...business.services.map((s: any) => s.price))}
-                              </motion.div>
+                              </div>
                             )}
                           </div>
                         </div>
-                      </motion.div>
+                      </div>
                     );
                   })
                 )}
-              </AnimatePresence>
             </div>
           </section>
         </div>
