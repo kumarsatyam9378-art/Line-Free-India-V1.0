@@ -325,6 +325,8 @@ export interface BusinessProfile {
   subscription?: string | null; subscriptionExpiry?: number | null;
   upiId?: string; businessHours?: string; bio?: string; instagram?: string;
   website?: string;
+  about?: string; // Detailed about section for business
+  galleryImages?: string[]; // Gallery images for business showcase
   referralCode?: string; totalCustomersAllTime?: number; lat?: number; lng?: number;
   fcmToken?: string; queueDelayMinutes?: number;
   staffMembers?: StaffMember[];

@@ -19,6 +19,45 @@ export default function BarberProfile() {
   const [businessHours, setBusinessHours] = useState(businessProfile?.businessHours || '');
   const [maxCapacity, setMaxCapacity] = useState<number | ''>(businessProfile?.maxCapacity || '');
   const [bio, setBio] = useState(businessProfile?.bio || '');
+  const [about, setAbout] = useState(businessProfile?.about || '');
+  const [galleryImages, setGalleryImages] = useState<string[]>(businessProfile?.galleryImages || []);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  
+  const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    
+    setUploadingGallery(true);
+    const promises = files.map(file => {
+      return new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 1200;
+            const scaleSize = img.width > MAX_WIDTH ? MAX_WIDTH / img.width : 1;
+            canvas.width = img.width > MAX_WIDTH ? MAX_WIDTH : img.width;
+            canvas.height = img.height * scaleSize;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', 0.8));
+          };
+          img.src = ev.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+    
+    Promise.all(promises).then(images => {
+      setGalleryImages(prev => [...prev, ...images]);
+      setUploadingGallery(false);
+    });
+  };
+  
+  const removeGalleryImage = (index: number) => {
+    setGalleryImages(prev => prev.filter((_, i) => i !== index));
+  };
   const [instagram, setInstagram] = useState(businessProfile?.instagram || '');
   const [services, setServices] = useState<ServiceItem[]>(businessProfile?.services || []);
   const [products, setProducts] = useState<{id: string, name: string, price: number, stock?: number}[]>(businessProfile?.products || []);
@@ -51,7 +90,7 @@ export default function BarberProfile() {
 
   const handleSave = async () => {
     if (!businessProfile) return;
-    await saveBusinessProfile({ ...businessProfile, name: name || businessProfile.name, businessName: salonName || businessProfile.businessName, salonName: salonName || businessProfile.salonName, location, lat, lng, phone, upiId, businessHours, bio, instagram, services, staffMembers: staffList, blockedDates, products, promoCodes, maxCapacity: typeof maxCapacity === 'number' ? maxCapacity : undefined });
+    await saveBusinessProfile({ ...businessProfile, name: name || businessProfile.name, businessName: salonName || businessProfile.businessName, salonName: salonName || businessProfile.salonName, location, lat, lng, phone, upiId, businessHours, bio, about, galleryImages, instagram, services, staffMembers: staffList, blockedDates, products, promoCodes, maxCapacity: typeof maxCapacity === 'number' ? maxCapacity : undefined });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -214,6 +253,19 @@ export default function BarberProfile() {
               <input value={val} onChange={e => set(e.target.value)} placeholder={placeholder} type={type || 'text'} className="input-field" />
             </div>
           ))}
+
+          {/* About Section - Textarea */}
+          <div>
+            <label className="text-sm text-text-dim mb-1 block">📝 About Your Business</label>
+            <textarea 
+              value={about} 
+              onChange={e => setAbout(e.target.value)} 
+              placeholder="Write a detailed description about your business, services, expertise, awards, etc..."
+              className="input-field min-h-[120px] resize-y"
+              rows={5}
+            />
+            <p className="text-xs text-text-dim mt-1">This will be shown in the About tab on your business page</p>
+          </div>
 
           <div className="relative">
             <label className="text-sm text-text-dim mb-1 block">{t('profile.location')} {t('profile.optional')}</label>
@@ -434,6 +486,54 @@ export default function BarberProfile() {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Gallery Section */}
+        <div className="mb-5">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold">🖼️ Business Gallery</h3>
+            <label className="text-primary text-sm font-medium cursor-pointer">
+              + Add Photos
+              <input 
+                type="file" 
+                accept="image/*" 
+                multiple 
+                className="hidden" 
+                onChange={handleGalleryUpload}
+                disabled={uploadingGallery}
+              />
+            </label>
+          </div>
+          
+          {uploadingGallery && (
+            <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 mb-3 flex items-center justify-center gap-2">
+              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <p className="text-primary text-sm">Uploading images...</p>
+            </div>
+          )}
+          
+          {galleryImages.length === 0 ? (
+            <div className="p-8 rounded-xl border border-dashed border-border text-center">
+              <span className="text-4xl block mb-2">📸</span>
+              <p className="text-text-dim text-sm mb-1">No gallery images yet</p>
+              <p className="text-text-dim text-xs">Add photos of your work, interior, team, etc.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-2">
+              {galleryImages.map((img, idx) => (
+                <div key={idx} className="relative aspect-square rounded-xl overflow-hidden bg-card-2 group">
+                  <img src={img} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => removeGalleryImage(idx)}
+                    className="absolute top-1 right-1 w-6 h-6 rounded-full bg-danger text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="text-xs text-text-dim mt-2">These images will appear in the Gallery tab on your business page</p>
         </div>
 
         <button onClick={handleSave} className={`btn-primary w-full mb-3 ${saved ? 'bg-success' : ''}`}>
