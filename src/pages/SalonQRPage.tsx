@@ -31,7 +31,7 @@ export default function SalonQRPage({ id: propId }: Props) {
     getBusinessById(salonId).then(s => { if (s) setSalon(s); });
   }, [salonId, allBusinesses, businessProfile, propId]);
 
-  const bookingUrl = `${window.location.origin}/customer/salon/${salonId}`;
+  const bookingUrl = `${window.location.origin}/qr/${salonId}?qr=true`;
   const termInfo = getCategoryInfo(salon?.businessType || 'men_salon');
 
   const handleDownload = async () => {

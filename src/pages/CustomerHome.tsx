@@ -1,559 +1,303 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../store/AppContext';
+import { useApp, getCategoryInfo, BUSINESS_CATEGORIES } from '../store/AppContext';
 import BottomNav from '../components/BottomNav';
 import ResponsiveContainer from '../components/ResponsiveContainer';
+import { motion } from 'framer-motion';
 import { triggerHaptic } from '../utils/haptics';
-import { ALL_BUSINESS_NICHE_ROWS } from '../config/businessRegistry.data';
-import { FaSearch, FaMagic, FaHeart, FaMapMarkerAlt, FaStar, FaFire, FaCrown, FaBolt } from 'react-icons/fa';
-import { useResponsive } from '../hooks/useResponsive';
 
 export default function CustomerHome() {
-  const { user, customerProfile, allSalons, isFavorite, toggleFavorite } = useApp();
+  const { 
+    allSalons, 
+    customerProfile, 
+    isFavorite, 
+    getUserLocation,
+    t 
+  } = useApp();
   const nav = useNavigate();
-  const { isMobile, isTablet, isDesktop } = useResponsive();
-  const [greeting, setGreeting] = useState('');
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [userLoc, setUserLoc] = useState<{lat: number, lng: number} | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [nearbyBusinesses, setNearbyBusinesses] = useState<any[]>([]);
+
+  // Haversine formula for distance calculation
+  const getDistanceKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+  };
 
   useEffect(() => {
-    const h = new Date().getHours();
-    if (h < 12) setGreeting('Good Morning');
-    else if (h < 17) setGreeting('Good Afternoon');
-    else setGreeting('Good Evening');
+    getUserLocation().then(loc => { 
+      if(loc) {
+        setUserLoc(loc);
+        calculateNearbyBusinesses(loc);
+      }
+    });
   }, []);
 
-  const filteredSalons = useMemo(() => {
-    let list = [...allSalons];
+  const calculateNearbyBusinesses = (loc: {lat: number, lng: number}) => {
+    const businessesWithDistance = allSalons
+      .filter(s => s.lat && s.lng)
+      .map(s => ({
+        ...s,
+        distance: getDistanceKm(loc.lat, loc.lng, s.lat!, s.lng!)
+      }))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 10);
     
-    // 1. Category Filtering
-    if (activeCategory !== 'all') {
-      const niche = ALL_BUSINESS_NICHE_ROWS.find(n => n.id === activeCategory);
-      if (niche) {
-        // Match via template type (e.g. 'men_salon') OR the raw businessType matching the niche id
-        list = list.filter(b => 
-          b.businessType === niche.template || 
-          b.businessType === activeCategory ||
-          b.businessType === niche.id
-        );
-      } else {
-        // Direct category match
-        list = list.filter(b => b.businessType === activeCategory);
-      }
+    setNearbyBusinesses(businessesWithDistance);
+  };
+
+  const getFilteredBusinesses = () => {
+    let filtered = nearbyBusinesses;
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(b => b.businessType === selectedCategory);
     }
+    return filtered;
+  };
 
-    // 2. Search Query Filtering
-    if (searchQuery) {
-      list = list.filter(b =>
-        b.businessName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.businessType?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // 3. Advanced Sorting (Trends)
-    list.sort((a, b) => {
-      // Prioritize Open status
-      if (a.isOpen && !b.isOpen) return -1;
-      if (!a.isOpen && b.isOpen) return 1;
-
-      // Prioritize Popularity (Rating * Count)
-      const aScore = (a.rating || 0) * (a.totalReviews || 0);
-      const bScore = (b.rating || 0) * (b.totalReviews || 0);
-      if (bScore !== aScore) return bScore - aScore;
-
-      // Fallback: Newest first
-      return ((b.createdAt as number) || 0) - ((a.createdAt as number) || 0);
-    });
-
-    return list;
-  }, [allSalons, activeCategory, searchQuery]);
-
-  // Responsive sizing
-  const headerPadding = isMobile ? 'px-6 pt-14 pb-6' : isTablet ? 'px-8 pt-16 pb-8' : 'px-10 pt-20 pb-10';
-  const titleSize = isMobile ? 'text-4xl' : isTablet ? 'text-5xl' : 'text-6xl';
-  const avatarSize = isMobile ? 'w-14 h-14' : isTablet ? 'w-16 h-16' : 'w-20 h-20';
-  const contentPadding = isMobile ? 'px-5' : isTablet ? 'px-8' : 'px-10';
-  const cardSize = isMobile ? 'w-20 h-24' : isTablet ? 'w-24 h-28' : 'w-28 h-32';
+  const filteredBusinesses = getFilteredBusinesses();
 
   return (
     <ResponsiveContainer variant="customer">
-      <div className="h-full flex flex-col font-sans selection:bg-primary/30 relative overflow-hidden" style={{ backgroundColor: 'var(--color-bg)' }}>
-        {/* Simple Gradient Background */}
-        <div className="fixed inset-0 -z-10" style={{ 
-          background: 'linear-gradient(to bottom right, var(--color-bg), var(--color-card), var(--color-bg))' 
-        }} />
-
-        {/* ── Ultra Premium Fixed Header ── */}
-        <div className={`${headerPadding} sticky top-0 z-30 backdrop-blur-2xl flex-shrink-0 relative overflow-hidden`}
-          style={{
-            background: 'var(--color-card)',
-            borderBottom: '1px solid var(--color-border)',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)'
-          }}
-        >
-          {/* Header Shimmer Effect */}
-          <div
-            className="absolute inset-0 w-1/2"
-            style={{
-              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent)',
-              transform: 'skewX(-20deg)'
-            }}
-          />
-
-          <div className="flex items-center justify-between mb-8 relative z-10">
-            <div className="space-y-2">
-              <div 
-                className="flex items-center gap-3 mb-2"
-              >
-                <div
-                  className="w-8 h-8 rounded-2xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg shadow-primary/50"
+      <div className="h-full flex flex-col font-sans relative overflow-hidden bg-bg">
+        {/* Header */}
+        <div className="z-50 bg-background/80 backdrop-blur-xl border-b border-white/5 shadow-2xl safe-top">
+          <div className="p-6 pb-4">
+            <motion.div 
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="flex justify-between items-center mb-6"
+            >
+              <div>
+                <h1 className="text-3xl font-black text-text">
+                  {t('home')} 👋
+                </h1>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-dim mt-1">
+                  {customerProfile?.name || 'Welcome'}
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => nav('/customer/rewards')}
+                  className="w-12 h-12 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center text-xl relative"
                 >
-                  <FaBolt className="text-text text-sm" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-black text-text/50 uppercase tracking-[0.2em] block">{greeting}</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_10px_#4ade80]" />
-                    <span className="text-[9px] font-bold text-green-400 uppercase tracking-wider">Live Now</span>
+                  🎁
+                  {(customerProfile?.loyaltyPoints || 0) > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-gold rounded-full text-[8px] font-black text-white flex items-center justify-center">
+                      {customerProfile?.loyaltyPoints}
+                    </span>
+                  )}
+                </button>
+                <button 
+                  onClick={() => nav('/customer/notifications')}
+                  className="w-12 h-12 rounded-2xl bg-card border border-white/5 flex items-center justify-center text-xl"
+                >
+                  🔔
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Loyalty Points Card */}
+            {(customerProfile?.loyaltyPoints || 0) > 0 && (
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                onClick={() => nav('/customer/rewards')}
+                className="mb-6 p-5 rounded-3xl bg-gradient-to-br from-gold/20 to-primary/10 border border-gold/30 cursor-pointer active:scale-95 transition-all"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gold/70">Your Rewards</p>
+                    <p className="text-3xl font-black text-gold mt-1">{customerProfile?.loyaltyPoints} Points</p>
+                    <p className="text-xs text-text-dim mt-1">Tap to redeem rewards</p>
                   </div>
+                  <div className="text-5xl">🏆</div>
                 </div>
-              </div>
-              <h1 
-                className={`${titleSize} font-black tracking-tighter relative`}
-                style={{
-                  background: 'linear-gradient(135deg, #ffffff, #8B5CF6, #EC4899)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  filter: 'drop-shadow(0 0 20px rgba(139, 92, 246, 0.5))'
-                }}
-              >
-                {customerProfile?.name?.split(' ')[0] || user?.displayName?.split(' ')[0] || 'Explorer'}
-              </h1>
-            </div>
-            <button 
-              onClick={() => nav('/customer/profile')}
-              className={`${avatarSize} rounded-[2rem] p-[3px] relative overflow-hidden`}
-              style={{ 
-                minHeight: '44px', 
-                minWidth: '44px',
-                background: 'linear-gradient(135deg, #8B5CF6, #EC4899, #06B6D4)',
-                boxShadow: '0 10px 40px rgba(139, 92, 246, 0.5)'
-              }}
-            >
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-              />
-              <div className="w-full h-full rounded-[1.7rem] bg-[#0a0a0b] flex items-center justify-center overflow-hidden relative z-10">
-                {(customerProfile?.photoURL || user?.photoURL)
-                  ? <img src={customerProfile?.photoURL || user?.photoURL || ''} className="w-full h-full object-cover" alt="" />
-                  : <span className="text-3xl">⚡</span>}
-              </div>
-            </button>
-          </div>
-
-          {/* 💎 Ultra Premium Search Bar */}
-          <div 
-            className="relative group"
-          >
-            {/* Glow Effect */}
-            <div
-              className="absolute -inset-1 bg-gradient-to-r from-primary via-purple-500 to-pink-500 rounded-[2rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-700"
-            />
-            
-            <div className="relative rounded-[2rem] overflow-hidden border-2 border-white/10 group-focus-within:border-primary/50 transition-all duration-500"
-              style={{
-                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))',
-                backdropFilter: 'blur(40px)',
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), inset 0 0 40px rgba(255, 255, 255, 0.05)'
-              }}
-            >
-              {/* Shimmer Effect */}
-              <div
-                className="absolute inset-0 w-1/2"
-                style={{
-                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
-                  transform: 'skewX(-20deg)'
-                }}
-              />
-
-              <div className="flex items-center px-6 py-5 relative z-10">
-                <div>
-                  <FaSearch className="text-primary text-xl pointer-events-none drop-shadow-[0_0_10px_rgba(139,92,246,0.8)]" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Discover premium excellence..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent py-1 px-5 text-base font-bold text-text outline-none placeholder:text-text/30"
-                />
-                <div
-                  className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-primary/60 text-[10px] font-black tracking-wider uppercase"
-                >
-                  ⌘K
-                </div>
-              </div>
-            </div>
+              </motion.div>
+            )}
           </div>
         </div>
-        
-        {/* ── Scrollable Content ── */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar pb-40">
-        {/* 📡 Live Pulse Feed (Following) */}
-        {customerProfile?.following && customerProfile.following.length > 0 && (
-          <section 
-            className="px-6 my-6"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center text-primary text-[10px] shadow-inner border border-primary/20">📡</div>
-              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-text-dim">Pulse Feed: Following</h2>
-            </div>
-            <div className="flex flex-col gap-2">
-              {allSalons.filter(s => customerProfile.following?.includes(s.uid) && s.announcement).map((followed, fi) => (
-                <button 
-                  key={followed.uid}
-                  onClick={() => nav(`/customer/salon/${followed.uid}`)}
-                  className="w-full bg-white/[0.03] backdrop-blur-xl border border-white/5 rounded-xl p-3 flex items-center gap-3 group"
-                >
-                  <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border border-white/10">
-                    <img src={followed.photoURL} alt="" className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1 min-w-0 text-left">
-                    <p className="text-[9px] font-black text-text uppercase tracking-widest truncate mb-0.5">{followed.businessName}</p>
-                    <p className="text-[10px] text-text-dim truncate italic opacity-60">"{followed.announcement}"</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </section>
-        )}
 
-        <div className="space-y-10 pt-4">
-          {/* 🚀 Ultra Premium Discovery Section */}
-          <section className={`${contentPadding} spatial-perspective`}>
-            <div 
-              className="flex items-baseline justify-between mb-8 px-1"
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg shadow-primary/50"
-                >
-                  <FaFire className="text-text text-lg" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-black text-text uppercase tracking-wider">Discovery Portal</h2>
-                  <p className="text-[9px] font-bold text-text/40 uppercase tracking-widest">Explore Premium Services</p>
-                </div>
-              </div>
+        {/* Main Content */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          <div className="p-6 pb-32">
+            {/* Quick Actions */}
+            <div className="grid grid-cols-4 gap-3 mb-8">
               <button 
-                onClick={() => nav('/customer/search')} 
-                className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-primary to-purple-600 text-text text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/50 border border-white/20"
-                style={{ minHeight: '44px', minWidth: '44px' }}
+                onClick={() => nav('/customer/search')}
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-white/5 active:scale-95 transition-all"
               >
-                View All →
+                <span className="text-2xl">🔍</span>
+                <span className="text-[9px] font-bold text-text-dim">Search</span>
+              </button>
+              <button 
+                onClick={() => nav('/customer/tokens')}
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-white/5 active:scale-95 transition-all"
+              >
+                <span className="text-2xl">🎫</span>
+                <span className="text-[9px] font-bold text-text-dim">Activity</span>
+              </button>
+              <button 
+                onClick={() => nav('/customer/hairstyles')}
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-white/5 active:scale-95 transition-all"
+              >
+                <span className="text-2xl">✨</span>
+                <span className="text-[9px] font-bold text-text-dim">Explore</span>
+              </button>
+              <button 
+                onClick={() => nav('/customer/profile')}
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-white/5 active:scale-95 transition-all"
+              >
+                <span className="text-2xl">👤</span>
+                <span className="text-[9px] font-bold text-text-dim">Profile</span>
               </button>
             </div>
-            
-            <div className={`flex gap-6 overflow-x-auto pb-8 custom-scrollbar no-scrollbar -mx-${isMobile ? '5' : isTablet ? '8' : '10'} px-${isMobile ? '5' : isTablet ? '8' : '10'}`} style={{ touchAction: 'pan-x' }}>
-              <button
-                onClick={() => { triggerHaptic('light'); setActiveCategory('all'); }}
-                className="flex-shrink-0 w-28 flex flex-col items-center gap-4"
-              >
-                <div className={`w-28 h-32 rounded-[2.5rem] flex flex-col items-center justify-center gap-4 transition-all duration-500 relative overflow-hidden ${
-                  activeCategory === 'all' 
-                    ? 'border-2 border-primary shadow-[0_0_40px_rgba(139,92,246,0.6)]' 
-                    : 'border-2 border-white/10 hover:border-white/30'
-                }`}
-                  style={{
-                    background: activeCategory === 'all'
-                      ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2))'
-                      : 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))',
-                    backdropFilter: 'blur(40px)',
-                    boxShadow: activeCategory === 'all' 
-                      ? '0 20px 60px rgba(139, 92, 246, 0.4), inset 0 0 40px rgba(139, 92, 246, 0.2)'
-                      : '0 10px 30px rgba(0, 0, 0, 0.3)'
-                  }}
-                >
-                  {/* Animated Background */}
-                  {activeCategory === 'all' && (
-                    <>
-                      <div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                      />
-                      <div
-                        className="absolute inset-0 bg-gradient-to-br from-primary/30 to-purple-600/30 blur-2xl"
-                      />
-                    </>
-                  )}
-                  
-                  <div
-                    className={`text-5xl relative z-10 ${activeCategory === 'all' ? 'drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]' : ''}`}
-                  >
-                    <FaMagic className={activeCategory === 'all' ? 'text-primary' : 'text-text/40'} />
-                  </div>
-                  <span className={`text-[10px] font-black uppercase tracking-widest text-center px-2 relative z-10 ${
-                    activeCategory === 'all' ? 'text-primary' : 'text-text/40'
-                  }`}>
-                    Trending
-                  </span>
-                </div>
-              </button>
 
-              {ALL_BUSINESS_NICHE_ROWS.map((niche, i) => {
-                const isActive = activeCategory === niche.id;
-                return (
+            {/* Category Filter */}
+            <div className="mb-6">
+              <h2 className="text-lg font-black text-text mb-4">Choose Category</h2>
+              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
+                    selectedCategory === 'all'
+                      ? 'bg-primary border-transparent text-white shadow-lg'
+                      : 'bg-card border-white/5 text-text-dim'
+                  }`}
+                >
+                  🎯 All
+                </button>
+                {BUSINESS_CATEGORIES.map(cat => (
                   <button
-                    key={niche.id}
-                    onClick={() => { triggerHaptic('light'); setActiveCategory(niche.id); }}
-                    className="flex-shrink-0 w-28 flex flex-col items-center gap-4"
-                  >
-                    <div className={`w-28 h-32 rounded-[2.5rem] flex flex-col items-center justify-center gap-4 transition-all duration-500 relative overflow-hidden ${
-                      isActive 
-                        ? 'border-2 border-primary shadow-[0_0_40px_rgba(139,92,246,0.6)]' 
-                        : 'border-2 border-white/10 hover:border-white/30'
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
+                      selectedCategory === cat.id
+                        ? 'bg-primary border-transparent text-white shadow-lg'
+                        : 'bg-card border-white/5 text-text-dim'
                     }`}
-                      style={{
-                        background: isActive
-                          ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2))'
-                          : 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))',
-                        backdropFilter: 'blur(40px)',
-                        boxShadow: isActive 
-                          ? '0 20px 60px rgba(139, 92, 246, 0.4), inset 0 0 40px rgba(139, 92, 246, 0.2)'
-                          : '0 10px 30px rgba(0, 0, 0, 0.3)'
-                      }}
-                    >
-                      {/* Animated Background */}
-                      {isActive && (
-                        <>
-                          <div
-                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                          />
-                          <div
-                            className="absolute inset-0 bg-gradient-to-br from-primary/30 to-purple-600/30 blur-2xl"
-                          />
-                        </>
-                      )}
-                      
-                      <div
-                        className={`text-5xl relative z-10 ${isActive ? 'drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]' : ''}`}
-                      >
-                        <span className={isActive ? 'text-primary' : 'text-text/40'}>{niche.icon}</span>
-                      </div>
-                      <span className={`text-[10px] font-black uppercase tracking-widest text-center truncate w-full px-2 relative z-10 ${
-                        isActive ? 'text-primary' : 'text-text/40'
-                      }`}>
-                        {niche.label.split('/')[0]}
-                      </span>
-                    </div>
+                  >
+                    {cat.icon} {cat.label}
                   </button>
-                );
-              })}
-            </div>
-          </section>
-
-
-
-          {/* 🏢 Ultra Premium Business Catalog */}
-          <section className={contentPadding}>
-            <div 
-              className="flex items-center justify-between mb-8"
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-lg shadow-pink-500/50"
-                >
-                  <FaCrown className="text-text text-lg" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-black uppercase tracking-wider text-text">
-                    {searchQuery ? 'Search Results' : 'Premium Partners'}
-                  </h2>
-                  <p className="text-[9px] font-bold text-text/40 uppercase tracking-widest">
-                    {filteredSalons.length} Elite Businesses
-                  </p>
-                </div>
+                ))}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-6">
-                {filteredSalons.length === 0 ? (
-                  <div
-                    className="py-24 text-center rounded-[3rem] relative overflow-hidden border-2 border-white/10"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))',
-                      backdropFilter: 'blur(40px)',
-                      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
-                    }}
+            {/* Nearby Businesses */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-black text-text">
+                  📍 Nearby Businesses
+                </h2>
+                {userLoc && (
+                  <button 
+                    onClick={() => getUserLocation().then(loc => loc && calculateNearbyBusinesses(loc))}
+                    className="text-xs font-bold text-primary"
                   >
-                    <div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
-                    />
-                    <div>
-                      <FaMagic className="text-6xl mx-auto mb-6 text-primary opacity-30 drop-shadow-[0_0_20px_rgba(139,92,246,0.6)]" />
-                    </div>
-                    <p className="font-black text-text text-2xl mb-2">No Results Found</p>
-                    <p className="text-xs text-text/40 tracking-widest uppercase font-black">Try adjusting your filters</p>
-                  </div>
-                ) : (
-                  filteredSalons.map((business, i) => {
-                    const imageSize = isMobile ? 'w-28 h-28' : isTablet ? 'w-32 h-32' : 'w-36 h-36';
-                    
+                    Refresh
+                  </button>
+                )}
+              </div>
+
+              {!userLoc ? (
+                <div className="text-center py-12 bg-card/30 rounded-3xl border border-white/5">
+                  <span className="text-5xl block mb-4">📍</span>
+                  <p className="text-text-dim mb-4">Enable location to see nearby businesses</p>
+                  <button 
+                    onClick={() => getUserLocation().then(loc => loc && calculateNearbyBusinesses(loc))}
+                    className="px-6 py-3 rounded-2xl bg-primary text-white font-bold"
+                  >
+                    Enable Location
+                  </button>
+                </div>
+              ) : filteredBusinesses.length === 0 ? (
+                <div className="text-center py-12 bg-card/30 rounded-3xl border border-white/5">
+                  <span className="text-5xl block mb-4">🔍</span>
+                  <p className="text-text-dim">No businesses found in this category</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredBusinesses.map((business: any) => {
+                    const catInfo = getCategoryInfo(business.businessType);
                     return (
-                      <div
+                      <motion.button
                         key={business.uid}
                         onClick={() => nav(`/customer/salon/${business.uid}`)}
-                        className="group relative p-6 flex gap-6 cursor-pointer rounded-[3rem] border-2 border-white/10 hover:border-primary/50 transition-all duration-500 overflow-hidden"
-                        style={{
-                          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03))',
-                          backdropFilter: 'blur(40px)',
-                          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), inset 0 0 40px rgba(255, 255, 255, 0.05)'
-                        }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="w-full p-5 rounded-3xl bg-card border border-white/5 text-left flex items-start gap-4 hover:border-primary/40 transition-all active:scale-[0.98] shadow-xl"
                       >
-                        {/* Animated Background Effects */}
-                        <div
-                          className="absolute inset-0 w-1/2"
-                          style={{
-                            background: 'linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent)',
-                            transform: 'skewX(-20deg)'
-                          }}
-                        />
-                        <div
-                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                          style={{
-                            background: 'radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.1), transparent 70%)'
-                          }}
-                        />
-
-                        {/* Business Image */}
-                        <div className={`${imageSize} rounded-[2.5rem] flex-shrink-0 overflow-hidden relative border-2 border-white/20 shadow-2xl`}
-                          style={{
-                            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2))',
-                            boxShadow: '0 20px 40px rgba(139, 92, 246, 0.3)'
-                          }}
-                        >
-                          {business.bannerImageURL
-                            ? <img 
-                                src={business.bannerImageURL} 
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]" 
-                                alt=""
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none';
-                                  const parent = e.currentTarget.parentElement;
-                                  if (parent) {
-                                    parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-5xl opacity-30">✨</div>';
-                                  }
-                                }}
-                              />
-                            : <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">✨</div>}
-                          
-                          {/* Rating Badge */}
-                          <div 
-                            className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 to-transparent"
-                          >
-                            <div className="px-3 py-1.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 text-yellow-400 border border-yellow-400/30"
-                              style={{
-                                background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(234, 179, 8, 0.1))',
-                                backdropFilter: 'blur(20px)',
-                                boxShadow: '0 0 20px rgba(234, 179, 8, 0.3)'
-                              }}
-                            >
-                              <FaStar className="text-yellow-400 drop-shadow-[0_0_5px_rgba(234,179,8,0.8)]" />
-                              {business.rating || 4.9}
-                            </div>
-                          </div>
+                        <div className="w-20 h-20 rounded-2xl bg-card-2 flex items-center justify-center overflow-hidden flex-shrink-0 border border-white/10">
+                          {business.bannerImageURL ? (
+                            <img src={business.bannerImageURL} className="w-full h-full object-cover" alt="" />
+                          ) : <span className="text-3xl">{catInfo.icon}</span>}
                         </div>
-
-                        {/* Business Info */}
-                        <div className="flex-1 flex flex-col justify-center min-w-0 relative z-10">
-                          <div className="flex items-start justify-between gap-4 mb-3">
-                            <div className="flex-1 min-w-0">
-                              <h3 className={`font-black text-text ${isMobile ? 'text-lg' : 'text-xl'} leading-tight tracking-tight group-hover:text-primary transition-colors mb-2 uppercase`}
-                                style={{
-                                  textShadow: '0 0 20px rgba(139, 92, 246, 0.3)'
-                                }}
-                              >
-                                {business.businessName}
-                              </h3>
-                              <div className="flex items-center gap-2 text-[10px] font-bold text-text/50 uppercase tracking-wider mb-3">
-                                <FaMapMarkerAlt className="text-primary" />
-                                <span className="truncate">{business.location || 'Universal Platform'}</span>
-                              </div>
-                            </div>
-                            
-                            {/* Favorite Button */}
-                            <button
-                              onClick={e => { e.stopPropagation(); toggleFavorite(business.uid); }}
-                              className="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center border-2 border-white/20 transition-all"
-                              style={{
-                                minHeight: '44px',
-                                minWidth: '44px',
-                                background: isFavorite(business.uid)
-                                  ? 'linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(239, 68, 68, 0.3))'
-                                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))',
-                                backdropFilter: 'blur(20px)',
-                                boxShadow: isFavorite(business.uid) 
-                                  ? '0 0 20px rgba(236, 72, 153, 0.5)' 
-                                  : '0 5px 15px rgba(0, 0, 0, 0.2)'
-                              }}
-                            >
-                              <span className="text-2xl">{isFavorite(business.uid) ? '❤️' : '🤍'}</span>
-                            </button>
-                          </div>
-                          
-                          {/* Status & Price Tags */}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-black text-text truncate">{business.businessName}</p>
+                          <p className="text-[10px] font-black text-primary/70 uppercase tracking-widest mb-2">{catInfo.label}</p>
                           <div className="flex items-center gap-3 flex-wrap">
-                            <div 
-                              className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-[10px] font-black uppercase tracking-widest ${
-                                business.isOpen 
-                                  ? 'border-green-400/30 text-green-400' 
-                                  : 'border-white/10 text-text/30'
-                              }`}
-                              style={{
-                                background: business.isOpen
-                                  ? 'linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(34, 197, 94, 0.2))'
-                                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))',
-                                backdropFilter: 'blur(20px)',
-                                boxShadow: business.isOpen 
-                                  ? '0 0 20px rgba(74, 222, 128, 0.3)' 
-                                  : 'none'
-                              }}
-                            >
-                              <div 
-                                className={`w-2 h-2 rounded-full ${
-                                  business.isOpen 
-                                    ? 'bg-green-400 shadow-[0_0_10px_#4ade80]' 
-                                    : 'bg-white/20'
-                                }`} 
-                              />
-                              {business.isOpen ? 'Live Now' : 'Offline'}
+                            <div className="flex items-center gap-1 text-[10px] font-black text-gold">
+                              ⭐ {business.rating || 'New'}
                             </div>
-                            
-                            {business.services?.length > 0 && (
-                              <div
-                                className="px-4 py-2 rounded-xl border-2 border-primary/30 text-primary text-[10px] font-black uppercase tracking-widest"
-                                style={{
-                                  background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2))',
-                                  backdropFilter: 'blur(20px)',
-                                  boxShadow: '0 0 20px rgba(139, 92, 246, 0.3)'
-                                }}
-                              >
-                                From ₹{Math.min(...business.services.map((s: any) => s.price))}
+                            <div className="flex items-center gap-1 text-[10px] font-black text-text-dim">
+                              📍 {business.distance?.toFixed(1)} km
+                            </div>
+                            {business.isOpen && (
+                              <div className="flex items-center gap-1 text-[10px] font-black text-success">
+                                🟢 Open
                               </div>
                             )}
                           </div>
                         </div>
-                      </div>
+                        <div className="self-center">
+                          <div className="w-8 h-8 rounded-xl bg-card-2 border border-white/5 flex items-center justify-center text-text-dim">›</div>
+                        </div>
+                      </motion.button>
                     );
-                  })
-                )}
+                  })}
+                </div>
+              )}
             </div>
-          </section>
+
+            {/* Favorites Section */}
+            {allSalons.filter(s => isFavorite(s.uid)).length > 0 && (
+              <div className="mt-8">
+                <h2 className="text-lg font-black text-text mb-4">❤️ Your Favorites</h2>
+                <div className="space-y-4">
+                  {allSalons.filter(s => isFavorite(s.uid)).slice(0, 3).map(business => {
+                    const catInfo = getCategoryInfo(business.businessType);
+                    return (
+                      <button
+                        key={business.uid}
+                        onClick={() => nav(`/customer/salon/${business.uid}`)}
+                        className="w-full p-4 rounded-2xl bg-card border border-white/5 text-left flex items-center gap-3 active:scale-95 transition-all"
+                      >
+                        <div className="w-14 h-14 rounded-xl bg-card-2 flex items-center justify-center overflow-hidden">
+                          {business.bannerImageURL ? (
+                            <img src={business.bannerImageURL} className="w-full h-full object-cover" alt="" />
+                          ) : <span className="text-2xl">{catInfo.icon}</span>}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold text-text">{business.businessName}</p>
+                          <p className="text-xs text-text-dim">{catInfo.label}</p>
+                        </div>
+                        <span className="text-xl">›</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+
+        <BottomNav />
       </div>
-      <BottomNav />
-    </div>
-  </ResponsiveContainer>
+    </ResponsiveContainer>
   );
 }
-

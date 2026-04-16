@@ -20,6 +20,7 @@ const SecretAdminPanel = lazy(() => import('./pages/SecretAdminPanel'));
 const GetMyUID = lazy(() => import('./pages/GetMyUID'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
 const SalonQRPage = lazy(() => import('./pages/SalonQRPage'));
+const QRScanLanding = lazy(() => import('./pages/QRScanLanding'));
 
 // ─── Customer Discovery ───
 const CommunityBoard = lazy(() => import('./pages/CommunityBoard'));
@@ -200,6 +201,7 @@ function AppRoutes() {
           <Route path="/customer/setup" element={<CustomerProfileSetup />} />
           <Route path="/barber/setup" element={<BarberProfileSetup />} />
           <Route path="/salon/:id/qr" element={<SalonQRPage />} />
+          <Route path="/qr/:id" element={<QRScanLanding />} />
 
           {/* Admin */}
           <Route path="/admin/dashboard" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
