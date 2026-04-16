@@ -7,6 +7,7 @@ import { db } from '../firebase';
 import { Helmet } from 'react-helmet-async';
 import BackButton from '../components/BackButton';
 import { triggerHaptic } from '../utils/haptics';
+import { getBusinessImageWithFallback } from '../utils/categoryImages';
 
 interface Product {
   id: string;
@@ -459,15 +460,11 @@ export default function SalonDetail() {
         {/* Banner */}
         <div className={`${business.promoCodes?.some(p => p.active) ? 'mb-5' : 'mt-4 mb-5'}`}>
           <div className="w-full h-44 rounded-2xl bg-card-2 overflow-hidden mb-4 relative">
-            {business.bannerImageURL ? (
-              <img src={business.bannerImageURL} className="w-full h-44 object-cover" alt="" />
-            ) : business.photoURL ? (
-              <img src={business.photoURL} className="w-full h-44 object-cover" alt="" />
-            ) : (
-              <div className="w-full h-44 flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
-                <span className="text-6xl opacity-70">{catInfo.icon}</span>
-              </div>
-            )}
+            <img 
+              src={getBusinessImageWithFallback(business.photoURL, business.bannerImageURL, business.businessType)} 
+              className="w-full h-44 object-cover" 
+              alt={business.businessName} 
+            />
             <button onClick={() => toggleFavorite(business.uid)} className="absolute top-3 right-3 w-10 h-10 rounded-full glass-strong flex items-center justify-center text-xl active:scale-90 transition-transform">
               {isFavorite(business.uid) ? '❤️' : '🤍'}
             </button>
@@ -482,10 +479,10 @@ export default function SalonDetail() {
               </button>
             )}
             <div className="absolute bottom-3 left-3 flex gap-2">
-              <span className={`badge text-xs shadow-md backdrop-blur-md border ${isClosed ? 'bg-danger/80 border-danger/50 text-white' : isOnBreak ? 'bg-warning/80 border-warning/50 text-white' : 'bg-success/80 border-success/50 text-white'}`}>
-                {isClosed ? '🔴 Closed' : isOnBreak ? '🟡 On Break' : '🟢 Open'}
+              <span className={`badge text-xs shadow-md backdrop-blur-md border font-black uppercase ${isClosed ? 'bg-danger/90 border-danger/50 text-white' : isOnBreak ? 'bg-warning/90 border-warning/50 text-white' : 'bg-success/90 border-success/50 text-white'}`}>
+                {isClosed ? '🔴 CLOSED' : isOnBreak ? '🟡 ON BREAK' : '🟢 LIVE NOW'}
               </span>
-              {isStopped && <span className="badge bg-card/80 border border-border text-white text-xs backdrop-blur-md">⚠️ Bookings Paused</span>}
+              {isStopped && <span className="badge bg-card/80 border border-border text-white text-xs backdrop-blur-md font-black uppercase">⚠️ BOOKINGS PAUSED</span>}
             </div>
           </div>
 

@@ -378,6 +378,8 @@ export interface BusinessProfile {
   repairEstimates?: RepairEstimate[]; // Mechanics (Phase 83)
   retailSales?: RetailSale[]; // Beauty & Salon (Phase 84)
   portfolioImages?: string[]; // Legacy
+  about?: string; // Business description/about section
+  galleryImages?: string[]; // Gallery images for business
   portfolioItems?: PortfolioItem[]; // For Tattoo/Mehendi (Phase 44)
   eventBookings?: EventBooking[]; // For Mehendi/Event Management (Phase 45)
   departments?: HospitalDepartment[]; // For hospitals (Phase 34)

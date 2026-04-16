@@ -53,11 +53,27 @@ export default function CustomerHome() {
   };
 
   const getFilteredBusinesses = () => {
-    // Show ALL businesses, not just nearby
-    let filtered = allSalons;
+    // Calculate distance for all businesses
+    let filtered = allSalons.map(business => {
+      if (userLoc && business.lat && business.lng && business.lat !== 0 && business.lng !== 0) {
+        const distance = getDistanceKm(userLoc.lat, userLoc.lng, business.lat, business.lng);
+        return { ...business, distance };
+      }
+      return { ...business, distance: undefined };
+    });
+    
+    // Filter by category
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(b => b.businessType === selectedCategory);
     }
+    
+    // Sort by distance (closest first)
+    filtered.sort((a, b) => {
+      if (a.distance === undefined) return 1;
+      if (b.distance === undefined) return -1;
+      return a.distance - b.distance;
+    });
+    
     return filtered;
   };
 
@@ -175,6 +191,7 @@ export default function CustomerHome() {
                       ? Math.min(...business.services.map(s => s.price))
                       : null;
                     const isLive = business.isOpen && !business.isBreak && !business.isStopped;
+                    const distance = (business as any).distance;
                     
                     return (
                       <button
@@ -195,10 +212,13 @@ export default function CustomerHome() {
                         <div className="flex-1 min-w-0">
                           <h3 className="text-base font-black text-text mb-1 truncate">{business.businessName}</h3>
                           
-                          {/* Location */}
+                          {/* Location with distance */}
                           <div className="flex items-center gap-2 text-xs text-text-dim mb-2">
                             <span>📍</span>
-                            <span className="truncate">{business.location || 'SHOP NO 7 BUILDING NAME, GOBINDPUR, GOBINDPUR, JHARKHAND - 828104'}</span>
+                            <span className="truncate flex-1">{business.location || 'SHOP NO 7 BUILDING NAME, GOBINDPUR, GOBINDPUR, JHARKHAND - 828104'}</span>
+                            {distance !== undefined && (
+                              <span className="text-primary font-bold whitespace-nowrap">{distance.toFixed(1)} km</span>
+                            )}
                           </div>
                           
                           {/* LIVE NOW Badge and Price */}
