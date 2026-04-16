@@ -66,7 +66,7 @@ const AVAILABLE_REWARDS: Reward[] = [
 ];
 
 export default function RewardsCenter() {
-  const { customerProfile, t } = useApp();
+  const { customerProfile } = useApp();
   const nav = useNavigate();
   const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
   const [showRedeemModal, setShowRedeemModal] = useState(false);
@@ -90,69 +90,73 @@ export default function RewardsCenter() {
 
   return (
     <ResponsiveContainer variant="customer">
-      <div className="min-h-screen bg-bg text-text pb-24">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-8">
+      <div className="min-h-screen bg-bg pb-24">
+        {/* Header */}
+        <div className="sticky top-0 z-50 bg-bg border-b border-border">
+          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
             <BackButton to="/customer/home" />
-            <h1 className="text-2xl font-black">Rewards Center</h1>
-            <div className="w-10" />
+            <h1 className="text-xl font-bold text-text">Rewards</h1>
           </div>
+        </div>
 
+        <div className="max-w-4xl mx-auto px-4 py-4">
           {/* Points Card */}
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="mb-8 p-6 rounded-3xl bg-gradient-to-br from-gold/20 to-primary/10 border border-gold/30 relative overflow-hidden"
+            className="mb-6 p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gold/10 rounded-full blur-3xl" />
-            <div className="relative z-10">
-              <p className="text-[10px] font-black uppercase tracking-widest text-gold/70 mb-2">Your Balance</p>
-              <p className="text-5xl font-black text-gold mb-4">{userPoints}</p>
-              <div className="flex items-center gap-4">
-                <div className="flex-1">
-                  <p className="text-xs text-text-dim mb-1">Current Streak</p>
-                  <p className="text-2xl font-black text-primary">{currentStreak} days 🔥</p>
-                </div>
-                <button 
-                  onClick={() => nav('/customer/loyalty')}
-                  className="px-4 py-2 rounded-xl bg-gold/20 border border-gold/30 text-gold text-xs font-bold"
-                >
-                  Earn More
-                </button>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wide mb-1">Your Balance</p>
+                <p className="text-4xl font-bold text-amber-700 dark:text-amber-300">{userPoints}</p>
               </div>
+              <div className="text-5xl">🏆</div>
+            </div>
+            <div className="flex items-center justify-between pt-4 border-t border-amber-500/20">
+              <div>
+                <p className="text-xs text-text-dim mb-0.5">Current Streak</p>
+                <p className="text-lg font-bold text-text">{currentStreak} days 🔥</p>
+              </div>
+              <button 
+                onClick={() => nav('/customer/home')}
+                className="px-4 py-2 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 dark:text-amber-300 text-sm font-semibold transition-colors"
+              >
+                Earn More
+              </button>
             </div>
           </motion.div>
 
           {/* How to Earn Points */}
-          <div className="mb-8 p-5 rounded-3xl bg-card border border-white/5">
-            <h3 className="text-sm font-black text-text mb-4">💡 How to Earn Points</h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-lg">🎫</div>
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-text">Complete a Visit</p>
-                  <p className="text-xs text-text-dim">+50 points per visit</p>
+          <div className="mb-6 p-4 rounded-xl bg-card border border-border">
+            <h3 className="text-sm font-bold text-text mb-3">💡 How to Earn Points</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-base flex-shrink-0">🎫</div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-text">Complete Visit</p>
+                  <p className="text-[10px] text-text-dim">+50 points</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center text-lg">⭐</div>
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-text">Leave a Review</p>
-                  <p className="text-xs text-text-dim">+25 points per review</p>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-base flex-shrink-0">⭐</div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-text">Leave Review</p>
+                  <p className="text-[10px] text-text-dim">+25 points</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-lg">🔥</div>
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-text">Daily Streak</p>
-                  <p className="text-xs text-text-dim">+10 points per day</p>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-base flex-shrink-0">🔥</div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-text">Daily Streak</p>
+                  <p className="text-[10px] text-text-dim">+10 points/day</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center text-lg">👥</div>
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-text">Refer a Friend</p>
-                  <p className="text-xs text-text-dim">+100 points per referral</p>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-base flex-shrink-0">👥</div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-text">Refer Friend</p>
+                  <p className="text-[10px] text-text-dim">+100 points</p>
                 </div>
               </div>
             </div>
@@ -160,8 +164,8 @@ export default function RewardsCenter() {
 
           {/* Available Rewards */}
           <div>
-            <h2 className="text-lg font-black text-text mb-4">🎁 Available Rewards</h2>
-            <div className="grid grid-cols-1 gap-4">
+            <h2 className="text-base font-bold text-text mb-3">🎁 Available Rewards</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {AVAILABLE_REWARDS.map((reward, index) => {
                 const canAfford = userPoints >= reward.points;
                 return (
@@ -169,34 +173,34 @@ export default function RewardsCenter() {
                     key={reward.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.05 }}
                     onClick={() => canAfford && handleRedeem(reward)}
                     disabled={!canAfford}
-                    className={`p-5 rounded-3xl border text-left transition-all ${
+                    className={`p-4 rounded-xl border text-left transition-all ${
                       canAfford
-                        ? 'bg-card border-white/5 hover:border-primary/40 active:scale-95'
-                        : 'bg-card/50 border-white/5 opacity-50 cursor-not-allowed'
+                        ? 'bg-card border-border hover:border-primary/40 hover:shadow-md active:scale-[0.98]'
+                        : 'bg-card/50 border-border opacity-50 cursor-not-allowed'
                     }`}
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="w-14 h-14 rounded-2xl bg-card-2 flex items-center justify-center text-3xl flex-shrink-0">
+                    <div className="flex items-start gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-card-2 flex items-center justify-center text-2xl flex-shrink-0">
                         {reward.icon}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-black text-text mb-1">{reward.title}</p>
-                        <p className="text-xs text-text-dim mb-3">{reward.description}</p>
+                        <p className="font-bold text-sm text-text mb-0.5 line-clamp-1">{reward.title}</p>
+                        <p className="text-xs text-text-dim mb-2 line-clamp-1">{reward.description}</p>
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="text-gold text-lg">💎</span>
-                            <span className="text-sm font-black text-gold">{reward.points} points</span>
+                          <div className="flex items-center gap-1">
+                            <span className="text-amber-500 text-base">💎</span>
+                            <span className="text-xs font-bold text-amber-600 dark:text-amber-400">{reward.points} pts</span>
                           </div>
                           {canAfford ? (
-                            <span className="px-3 py-1 rounded-lg bg-primary/20 text-primary text-xs font-bold">
+                            <span className="px-2.5 py-1 rounded-lg bg-primary/10 text-primary text-[10px] font-bold">
                               Redeem
                             </span>
                           ) : (
-                            <span className="px-3 py-1 rounded-lg bg-white/5 text-text-dim text-xs font-bold">
-                              Need {reward.points - userPoints} more
+                            <span className="px-2.5 py-1 rounded-lg bg-card-2 text-text-dim text-[10px] font-bold">
+                              Need {reward.points - userPoints}
                             </span>
                           )}
                         </div>
@@ -215,17 +219,17 @@ export default function RewardsCenter() {
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-card rounded-3xl p-6 max-w-sm w-full border border-white/10"
+              className="bg-card rounded-2xl p-6 max-w-sm w-full border border-border"
             >
               <div className="text-center mb-6">
-                <div className="w-20 h-20 rounded-full bg-gold/20 flex items-center justify-center text-5xl mx-auto mb-4">
+                <div className="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center text-4xl mx-auto mb-4">
                   {selectedReward.icon}
                 </div>
-                <h3 className="text-xl font-black text-text mb-2">Redeem Reward?</h3>
+                <h3 className="text-lg font-bold text-text mb-2">Redeem Reward?</h3>
                 <p className="text-sm text-text-dim mb-4">{selectedReward.title}</p>
-                <div className="p-4 rounded-2xl bg-card-2 border border-white/5">
+                <div className="p-4 rounded-xl bg-card-2 border border-border">
                   <p className="text-xs text-text-dim mb-1">Cost</p>
-                  <p className="text-2xl font-black text-gold">{selectedReward.points} points</p>
+                  <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{selectedReward.points} points</p>
                   <p className="text-xs text-text-dim mt-2">
                     Remaining: {userPoints - selectedReward.points} points
                   </p>
@@ -234,13 +238,13 @@ export default function RewardsCenter() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowRedeemModal(false)}
-                  className="flex-1 py-3 rounded-2xl bg-card-2 border border-white/5 text-text font-bold"
+                  className="flex-1 py-2.5 rounded-xl bg-card-2 border border-border text-text font-semibold hover:bg-card transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmRedeem}
-                  className="flex-1 py-3 rounded-2xl bg-gradient-to-r from-gold to-primary text-white font-bold"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold hover:from-amber-600 hover:to-orange-600 transition-colors"
                 >
                   Confirm
                 </button>
