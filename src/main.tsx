@@ -5,6 +5,13 @@ import { ToastProvider } from './components/ToastSystem';
 import "./index.css";
 import App from "./App";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { registerServiceWorker, startUpdateChecker } from './utils/updateChecker';
+
+// Register service worker for auto-updates
+registerServiceWorker();
+
+// Start checking for updates
+startUpdateChecker();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
