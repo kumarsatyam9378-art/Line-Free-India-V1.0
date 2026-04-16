@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp, getCategoryInfo, BUSINESS_CATEGORIES } from '../store/AppContext';
 import BottomNav from '../components/BottomNav';
 import ResponsiveContainer from '../components/ResponsiveContainer';
+import NearbyBusinessesMap from '../components/NearbyBusinessesMap';
 import { motion } from 'framer-motion';
 
 export default function CustomerHome() {
@@ -17,6 +18,7 @@ export default function CustomerHome() {
   const [userLoc, setUserLoc] = useState<{lat: number, lng: number} | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [nearbyBusinesses, setNearbyBusinesses] = useState<any[]>([]);
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
   // Haversine formula for distance calculation
   const getDistanceKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -193,14 +195,39 @@ export default function CustomerHome() {
                 <h2 className="text-lg font-black text-text">
                   📍 Nearby Businesses
                 </h2>
-                {userLoc && (
-                  <button 
-                    onClick={() => getUserLocation().then(loc => loc && calculateNearbyBusinesses(loc))}
-                    className="text-xs font-bold text-primary"
-                  >
-                    Refresh
-                  </button>
-                )}
+                <div className="flex items-center gap-2">
+                  {userLoc && (
+                    <button 
+                      onClick={() => getUserLocation().then(loc => loc && calculateNearbyBusinesses(loc))}
+                      className="text-xs font-bold text-primary"
+                    >
+                      Refresh
+                    </button>
+                  )}
+                  {/* View Mode Toggle */}
+                  <div className="flex gap-1 bg-card rounded-xl p-1 border border-white/5">
+                    <button
+                      onClick={() => setViewMode('list')}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                        viewMode === 'list'
+                          ? 'bg-primary text-white'
+                          : 'text-text-dim'
+                      }`}
+                    >
+                      📋 List
+                    </button>
+                    <button
+                      onClick={() => setViewMode('map')}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                        viewMode === 'map'
+                          ? 'bg-primary text-white'
+                          : 'text-text-dim'
+                      }`}
+                    >
+                      🗺️ Map
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {!userLoc ? (
@@ -220,46 +247,66 @@ export default function CustomerHome() {
                   <p className="text-text-dim">No businesses found in this category</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {filteredBusinesses.map((business: any) => {
-                    const catInfo = getCategoryInfo(business.businessType);
-                    return (
-                      <motion.button
-                        key={business.uid}
-                        onClick={() => nav(`/customer/salon/${business.uid}`)}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="w-full p-5 rounded-3xl bg-card border border-white/5 text-left flex items-start gap-4 hover:border-primary/40 transition-all active:scale-[0.98] shadow-xl"
-                      >
-                        <div className="w-20 h-20 rounded-2xl bg-card-2 flex items-center justify-center overflow-hidden flex-shrink-0 border border-white/10">
-                          {business.bannerImageURL ? (
-                            <img src={business.bannerImageURL} className="w-full h-full object-cover" alt="" />
-                          ) : <span className="text-3xl">{catInfo.icon}</span>}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-black text-text truncate">{business.businessName}</p>
-                          <p className="text-[10px] font-black text-primary/70 uppercase tracking-widest mb-2">{catInfo.label}</p>
-                          <div className="flex items-center gap-3 flex-wrap">
-                            <div className="flex items-center gap-1 text-[10px] font-black text-gold">
-                              ⭐ {business.rating || 'New'}
+                <>
+                  {/* Map View */}
+                  {viewMode === 'map' && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <NearbyBusinessesMap
+                        businesses={filteredBusinesses}
+                        userLocation={userLoc}
+                        onBusinessClick={(id) => nav(`/customer/salon/${id}`)}
+                      />
+                    </motion.div>
+                  )}
+
+                  {/* List View */}
+                  {viewMode === 'list' && (
+                    <div className="space-y-4">
+                      {filteredBusinesses.map((business: any) => {
+                        const catInfo = getCategoryInfo(business.businessType);
+                        return (
+                          <motion.button
+                            key={business.uid}
+                            onClick={() => nav(`/customer/salon/${business.uid}`)}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="w-full p-5 rounded-3xl bg-card border border-white/5 text-left flex items-start gap-4 hover:border-primary/40 transition-all active:scale-[0.98] shadow-xl"
+                          >
+                            <div className="w-20 h-20 rounded-2xl bg-card-2 flex items-center justify-center overflow-hidden flex-shrink-0 border border-white/10">
+                              {business.bannerImageURL ? (
+                                <img src={business.bannerImageURL} className="w-full h-full object-cover" alt="" />
+                              ) : <span className="text-3xl">{catInfo.icon}</span>}
                             </div>
-                            <div className="flex items-center gap-1 text-[10px] font-black text-text-dim">
-                              📍 {business.distance?.toFixed(1)} km
-                            </div>
-                            {business.isOpen && (
-                              <div className="flex items-center gap-1 text-[10px] font-black text-success">
-                                🟢 Open
+                            <div className="flex-1 min-w-0">
+                              <p className="font-black text-text truncate">{business.businessName}</p>
+                              <p className="text-[10px] font-black text-primary/70 uppercase tracking-widest mb-2">{catInfo.label}</p>
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <div className="flex items-center gap-1 text-[10px] font-black text-gold">
+                                  ⭐ {business.rating || 'New'}
+                                </div>
+                                <div className="flex items-center gap-1 text-[10px] font-black text-text-dim">
+                                  📍 {business.distance?.toFixed(1)} km
+                                </div>
+                                {business.isOpen && (
+                                  <div className="flex items-center gap-1 text-[10px] font-black text-success">
+                                    🟢 Open
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="self-center">
-                          <div className="w-8 h-8 rounded-xl bg-card-2 border border-white/5 flex items-center justify-center text-text-dim">›</div>
-                        </div>
-                      </motion.button>
-                    );
-                  })}
-                </div>
+                            </div>
+                            <div className="self-center">
+                              <div className="w-8 h-8 rounded-xl bg-card-2 border border-white/5 flex items-center justify-center text-text-dim">›</div>
+                            </div>
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
