@@ -2209,3 +2209,14 @@ html {
   background: rgba(255, 255, 255, 1);
   border-color: rgba(102, 126, 234, 0.2);
 }
+
+
+/* Hide scrollbar for horizontal scroll */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

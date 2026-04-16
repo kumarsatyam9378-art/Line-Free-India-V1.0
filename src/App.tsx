@@ -29,6 +29,7 @@ const ReferralPage = lazy(() => import('./pages/ReferralPage'));
 const CustomerHome = lazy(() => import('./pages/CustomerHome'));
 const CustomerSearch = lazy(() => import('./pages/CustomerSearch'));
 const SalonDetail = lazy(() => import('./pages/SalonDetail'));
+const SalonDetailSimple = lazy(() => import('./pages/SalonDetailSimple'));
 const CustomerTokens = lazy(() => import('./pages/CustomerTokens'));
 const CustomerProfileEdit = lazy(() => import('./pages/CustomerProfileEdit'));
 const CustomerSubscription = lazy(() => import('./pages/CustomerSubscription'));

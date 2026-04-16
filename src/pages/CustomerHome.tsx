@@ -3,21 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import { useApp, getCategoryInfo, BUSINESS_CATEGORIES } from '../store/AppContext';
 import BottomNav from '../components/BottomNav';
 import ResponsiveContainer from '../components/ResponsiveContainer';
-import NearbyBusinessesMap from '../components/NearbyBusinessesMap';
-import { motion } from 'framer-motion';
+import { getBusinessImageWithFallback } from '../utils/categoryImages';
 
 export default function CustomerHome() {
   const { 
     allSalons, 
     customerProfile, 
     isFavorite, 
+    toggleFavorite,
     getUserLocation
   } = useApp();
   const nav = useNavigate();
   const [userLoc, setUserLoc] = useState<{lat: number, lng: number} | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [nearbyBusinesses, setNearbyBusinesses] = useState<any[]>([]);
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
   // Haversine formula for distance calculation
   const getDistanceKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -54,7 +53,8 @@ export default function CustomerHome() {
   };
 
   const getFilteredBusinesses = () => {
-    let filtered = nearbyBusinesses;
+    // Show ALL businesses, not just nearby
+    let filtered = allSalons;
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(b => b.businessType === selectedCategory);
     }
@@ -67,279 +67,181 @@ export default function CustomerHome() {
   return (
     <ResponsiveContainer variant="customer">
       <div className="h-full flex flex-col font-sans relative overflow-hidden bg-bg">
-        {/* Header */}
-        <div className="z-50 bg-background/80 backdrop-blur-xl border-b border-white/5 shadow-2xl safe-top">
-          <div className="p-6 pb-4">
-            <motion.div 
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="flex justify-between items-center mb-6"
-            >
-              <div>
-                <h1 className="text-3xl font-black text-text">
-                  Home 👋
-                </h1>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-dim mt-1">
-                  {customerProfile?.name || 'Welcome'}
-                </p>
-              </div>
-              <div className="flex gap-3">
-                <button 
-                  onClick={() => nav('/customer/rewards')}
-                  className="w-12 h-12 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center text-xl relative"
-                >
-                  🎁
-                  {(customerProfile?.loyaltyPoints || 0) > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-gold rounded-full text-[8px] font-black text-white flex items-center justify-center">
-                      {customerProfile?.loyaltyPoints}
-                    </span>
-                  )}
-                </button>
-                <button 
-                  onClick={() => nav('/customer/notifications')}
-                  className="w-12 h-12 rounded-2xl bg-card border border-white/5 flex items-center justify-center text-xl"
-                >
-                  🔔
-                </button>
-              </div>
-            </motion.div>
-
-            {/* Loyalty Points Card */}
-            {(customerProfile?.loyaltyPoints || 0) > 0 && (
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                onClick={() => nav('/customer/rewards')}
-                className="mb-6 p-5 rounded-3xl bg-gradient-to-br from-gold/20 to-primary/10 border border-gold/30 cursor-pointer active:scale-95 transition-all"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gold/70">Your Rewards</p>
-                    <p className="text-3xl font-black text-gold mt-1">{customerProfile?.loyaltyPoints} Points</p>
-                    <p className="text-xs text-text-dim mt-1">Tap to redeem rewards</p>
-                  </div>
-                  <div className="text-5xl">🏆</div>
-                </div>
-              </motion.div>
+        {/* Header - Exactly like reference image */}
+        <div className="bg-bg px-4 pt-6 pb-4">
+          {/* Greeting with Avatar */}
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-sm text-text-dim">Good Morning,</p>
+              <h1 className="text-2xl font-black text-text flex items-center gap-2">
+                {customerProfile?.name || 'Satyam'}
+                <span className="px-2 py-0.5 bg-success/20 text-success text-[10px] font-black rounded">🟢 LIVE NOW</span>
+              </h1>
+            </div>
+            {customerProfile?.photoURL && (
+              <img 
+                src={customerProfile.photoURL} 
+                alt="Profile" 
+                className="w-14 h-14 rounded-full object-cover border-2 border-white/10"
+              />
             )}
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative mb-4">
+            <input
+              type="text"
+              placeholder="🔍 Discover premium excellence..."
+              className="w-full px-4 py-3 rounded-xl bg-card border border-white/5 text-text placeholder:text-text-dim focus:outline-none focus:border-primary/30"
+              readOnly
+              onClick={() => nav('/customer/search')}
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+              <button className="text-xs px-2 py-1 rounded bg-card-2 text-text-dim">Shortcut</button>
+              <button className="text-xs px-2 py-1 rounded bg-card-2 text-text-dim">Alt</button>
+            </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
-          <div className="p-6 pb-32">
-            {/* Quick Actions */}
-            <div className="grid grid-cols-4 gap-3 mb-8">
-              <button 
-                onClick={() => nav('/customer/search')}
-                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-white/5 active:scale-95 transition-all"
-              >
-                <span className="text-2xl">🔍</span>
-                <span className="text-[9px] font-bold text-text-dim">Search</span>
-              </button>
-              <button 
-                onClick={() => nav('/customer/tokens')}
-                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-white/5 active:scale-95 transition-all"
-              >
-                <span className="text-2xl">🎫</span>
-                <span className="text-[9px] font-bold text-text-dim">Activity</span>
-              </button>
-              <button 
-                onClick={() => nav('/customer/hairstyles')}
-                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-white/5 active:scale-95 transition-all"
-              >
-                <span className="text-2xl">✨</span>
-                <span className="text-[9px] font-bold text-text-dim">Explore</span>
-              </button>
-              <button 
-                onClick={() => nav('/customer/profile')}
-                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card border border-white/5 active:scale-95 transition-all"
-              >
-                <span className="text-2xl">👤</span>
-                <span className="text-[9px] font-bold text-text-dim">Profile</span>
-              </button>
-            </div>
-
-            {/* Category Filter */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar bg-bg">
+          <div className="px-4 pb-24">
+            {/* Discovery Portal - Category Pills */}
             <div className="mb-6">
-              <h2 className="text-lg font-black text-text mb-4">Choose Category</h2>
-              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">👑</span>
+                  <h2 className="text-sm font-black text-text uppercase">Discovery Portal</h2>
+                </div>
+                <button className="text-xs font-bold text-primary">VIEW ALL →</button>
+              </div>
+              <p className="text-[10px] text-text-dim uppercase tracking-wider mb-3">Explore Premium Services</p>
+              
+              {/* Horizontal Scrolling Categories */}
+              <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
                 <button
                   onClick={() => setSelectedCategory('all')}
-                  className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
+                  className={`flex-shrink-0 flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all ${
                     selectedCategory === 'all'
-                      ? 'bg-primary border-transparent text-white shadow-lg'
+                      ? 'bg-primary border-primary text-white'
                       : 'bg-card border-white/5 text-text-dim'
                   }`}
                 >
-                  🎯 All
+                  <span className="text-2xl">✨</span>
+                  <span className="text-[10px] font-bold uppercase">Trending</span>
                 </button>
                 {BUSINESS_CATEGORIES.map(cat => (
                   <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
-                      selectedCategory === cat.id
-                        ? 'bg-primary border-transparent text-white shadow-lg'
+                    key={cat.value}
+                    onClick={() => setSelectedCategory(cat.value)}
+                    className={`flex-shrink-0 flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all ${
+                      selectedCategory === cat.value
+                        ? 'bg-primary border-primary text-white'
                         : 'bg-card border-white/5 text-text-dim'
                     }`}
                   >
-                    {cat.icon} {cat.label}
+                    <span className="text-2xl">{cat.icon}</span>
+                    <span className="text-[10px] font-bold uppercase whitespace-nowrap">{cat.label}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Nearby Businesses */}
+            {/* Premium Partners Section */}
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-black text-text">
-                  📍 Nearby Businesses
-                </h2>
-                <div className="flex items-center gap-2">
-                  {userLoc && (
-                    <button 
-                      onClick={() => getUserLocation().then(loc => loc && calculateNearbyBusinesses(loc))}
-                      className="text-xs font-bold text-primary"
-                    >
-                      Refresh
-                    </button>
-                  )}
-                  {/* View Mode Toggle */}
-                  <div className="flex gap-1 bg-card rounded-xl p-1 border border-white/5">
-                    <button
-                      onClick={() => setViewMode('list')}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                        viewMode === 'list'
-                          ? 'bg-primary text-white'
-                          : 'text-text-dim'
-                      }`}
-                    >
-                      📋 List
-                    </button>
-                    <button
-                      onClick={() => setViewMode('map')}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                        viewMode === 'map'
-                          ? 'bg-primary text-white'
-                          : 'text-text-dim'
-                      }`}
-                    >
-                      🗺️ Map
-                    </button>
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">👑</span>
+                    <h2 className="text-sm font-black text-text uppercase">Premium Partners</h2>
                   </div>
+                  <p className="text-[10px] text-text-dim uppercase tracking-wider mt-1">
+                    {filteredBusinesses.length} Elite Business{filteredBusinesses.length !== 1 ? 'es' : ''}
+                  </p>
                 </div>
               </div>
 
-              {!userLoc ? (
-                <div className="text-center py-12 bg-card/30 rounded-3xl border border-white/5">
-                  <span className="text-5xl block mb-4">📍</span>
-                  <p className="text-text-dim mb-4">Enable location to see nearby businesses</p>
-                  <button 
-                    onClick={() => getUserLocation().then(loc => loc && calculateNearbyBusinesses(loc))}
-                    className="px-6 py-3 rounded-2xl bg-primary text-white font-bold"
-                  >
-                    Enable Location
-                  </button>
-                </div>
-              ) : filteredBusinesses.length === 0 ? (
+              {/* Business Cards - With Profile Photo like reference */}
+              {filteredBusinesses.length === 0 ? (
                 <div className="text-center py-12 bg-card/30 rounded-3xl border border-white/5">
                   <span className="text-5xl block mb-4">🔍</span>
-                  <p className="text-text-dim">No businesses found in this category</p>
+                  <p className="text-text-dim">No businesses found</p>
                 </div>
               ) : (
-                <>
-                  {/* Map View */}
-                  {viewMode === 'map' && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <NearbyBusinessesMap
-                        businesses={filteredBusinesses}
-                        userLocation={userLoc}
-                        onBusinessClick={(id) => nav(`/customer/salon/${id}`)}
-                      />
-                    </motion.div>
-                  )}
-
-                  {/* List View - Original Design */}
-                  {viewMode === 'list' && (
-                    <div className="space-y-4">
-                      {filteredBusinesses.map((business: any) => {
-                        const catInfo = getCategoryInfo(business.businessType);
-                        return (
-                          <motion.button
-                            key={business.uid}
-                            onClick={() => nav(`/customer/salon/${business.uid}`)}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="w-full p-5 rounded-3xl bg-card border border-white/5 text-left flex items-start gap-4 hover:border-primary/40 transition-all active:scale-[0.98] shadow-xl"
-                          >
-                            <div className="w-20 h-20 rounded-2xl bg-card-2 flex items-center justify-center overflow-hidden flex-shrink-0 border border-white/10">
-                              {business.bannerImageURL ? (
-                                <img src={business.bannerImageURL} className="w-full h-full object-cover" alt="" />
-                              ) : <span className="text-3xl">{catInfo.icon}</span>}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-black text-text truncate">{business.businessName}</p>
-                              <p className="text-[10px] font-black text-primary/70 uppercase tracking-widest mb-2">{catInfo.label}</p>
-                              <div className="flex items-center gap-3 flex-wrap">
-                                <div className="flex items-center gap-1 text-[10px] font-black text-gold">
-                                  ⭐ {business.rating || 'New'}
-                                </div>
-                                <div className="flex items-center gap-1 text-[10px] font-black text-text-dim">
-                                  📍 {business.distance?.toFixed(1)} km
-                                </div>
-                                {business.isOpen && (
-                                  <div className="flex items-center gap-1 text-[10px] font-black text-success">
-                                    � Open
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            <div className="self-center">
-                              <div className="w-8 h-8 rounded-xl bg-card-2 border border-white/5 flex items-center justify-center text-text-dim">›</div>
-                            </div>
-                          </motion.button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-
-            {/* Favorites Section */}
-            {favoriteBusinesses.length > 0 && (
-              <div className="mt-8">
-                <h2 className="text-lg font-black text-text mb-4">❤️ Your Favorites</h2>
                 <div className="space-y-4">
-                  {favoriteBusinesses.slice(0, 3).map(business => {
+                  {filteredBusinesses.map(business => {
                     const catInfo = getCategoryInfo(business.businessType);
+                    const minPrice = business.services && business.services.length > 0
+                      ? Math.min(...business.services.map(s => s.price))
+                      : null;
+                    const isLive = business.isOpen && !business.isBreak && !business.isStopped;
+                    
                     return (
                       <button
                         key={business.uid}
                         onClick={() => nav(`/customer/salon/${business.uid}`)}
-                        className="w-full p-4 rounded-2xl bg-card border border-white/5 text-left flex items-center gap-3 active:scale-95 transition-all"
+                        className="w-full bg-card rounded-3xl border border-white/5 overflow-hidden text-left hover:border-primary/30 transition-all active:scale-[0.98] flex items-center gap-4 p-4"
                       >
-                        <div className="w-14 h-14 rounded-xl bg-card-2 flex items-center justify-center overflow-hidden">
-                          {business.bannerImageURL ? (
-                            <img src={business.bannerImageURL} className="w-full h-full object-cover" alt="" />
-                          ) : <span className="text-2xl">{catInfo.icon}</span>}
+                        {/* Profile Photo - Rounded like reference image */}
+                        <div className="flex-shrink-0 w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden">
+                          <img 
+                            src={getBusinessImageWithFallback(business.photoURL, business.bannerImageURL, business.businessType)} 
+                            alt={business.businessName}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                        <div className="flex-1">
-                          <p className="font-bold text-text">{business.businessName}</p>
-                          <p className="text-xs text-text-dim">{catInfo.label}</p>
+
+                        {/* Business Info */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-base font-black text-text mb-1 truncate">{business.businessName}</h3>
+                          
+                          {/* Location */}
+                          <div className="flex items-center gap-2 text-xs text-text-dim mb-2">
+                            <span>📍</span>
+                            <span className="truncate">{business.location || 'SHOP NO 7 BUILDING NAME, GOBINDPUR, GOBINDPUR, JHARKHAND - 828104'}</span>
+                          </div>
+                          
+                          {/* LIVE NOW Badge and Price */}
+                          <div className="flex items-center gap-2">
+                            {isLive ? (
+                              <span className="px-2 py-0.5 rounded bg-success text-white text-[10px] font-black uppercase flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                                LIVE NOW
+                              </span>
+                            ) : business.isBreak ? (
+                              <span className="px-2 py-0.5 rounded bg-warning text-white text-[10px] font-black uppercase">
+                                🟡 ON BREAK
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded bg-danger text-white text-[10px] font-black uppercase">
+                                🔴 CLOSED
+                              </span>
+                            )}
+                            {minPrice && (
+                              <span className="text-xs">
+                                <span className="text-text-dim font-bold">FROM</span>
+                                <span className="text-primary font-black ml-1">₹{minPrice}</span>
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <span className="text-xl">›</span>
+
+                        {/* Favorite Heart */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(business.uid);
+                          }}
+                          className="flex-shrink-0 w-10 h-10 rounded-full bg-white/5 backdrop-blur flex items-center justify-center text-xl hover:scale-110 transition-transform"
+                        >
+                          {isFavorite(business.uid) ? '❤️' : '🤍'}
+                        </button>
                       </button>
                     );
                   })}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
