@@ -28,7 +28,7 @@ export default function BottomNav() {
     const tabs = [
       { path: '/customer/home', label: t('home'), icon: <FaHome /> },
       { path: '/customer/search', label: t('search'), icon: <FaSearch /> },
-      { path: '/customer/loyalty', label: 'Rewards', icon: <FaGem /> },
+      { path: '/customer/favourites', label: 'Favourites', icon: <FaGem /> },
       { path: '/customer/tokens', label: t('tokens'), icon: <FaTicketAlt /> },
       { path: '/customer/profile', label: t('profile'), icon: <FaUser /> },
     ];

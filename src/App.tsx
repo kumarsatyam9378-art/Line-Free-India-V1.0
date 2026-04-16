@@ -37,6 +37,7 @@ const CustomerTryOn = lazy(() => import('./pages/CustomerTryOn'));
 const CustomerHistory = lazy(() => import('./pages/CustomerHistory'));
 const LoyaltyPage = lazy(() => import('./pages/LoyaltyPage'));
 const CustomerLoyalty = lazy(() => import('./pages/CustomerLoyalty'));
+const CustomerFavourites = lazy(() => import('./pages/CustomerFavourites'));
 const CustomerChat = lazy(() => import('./pages/CustomerChat'));
 const ConsultationRoom = lazy(() => import('./pages/ConsultationRoom'));
 const CartPage = lazy(() => import('./pages/CartPage'));
@@ -224,6 +225,7 @@ function AppRoutes() {
           <Route path="/customer/history" element={<AuthGuard requiredRole="customer"><CustomerHistory /></AuthGuard>} />
           <Route path="/customer/loyalty" element={<AuthGuard requiredRole="customer"><LoyaltyPage /></AuthGuard>} />
           <Route path="/customer/loyalty/:businessId" element={<AuthGuard requiredRole="customer"><CustomerLoyalty /></AuthGuard>} />
+          <Route path="/customer/favourites" element={<AuthGuard requiredRole="customer"><CustomerFavourites /></AuthGuard>} />
           <Route path="/customer/chat/:salonId" element={<AuthGuard requiredRole="customer"><CustomerChat /></AuthGuard>} />
           <Route path="/customer/notifications" element={<AuthGuard requiredRole="customer"><NotificationsPage /></AuthGuard>} />
           <Route path="/customer/consultation/:id" element={<AuthGuard requiredRole="customer"><ConsultationRoom /></AuthGuard>} />
