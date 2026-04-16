@@ -4,7 +4,6 @@ import { useApp, getCategoryInfo, BUSINESS_CATEGORIES } from '../store/AppContex
 import BottomNav from '../components/BottomNav';
 import ResponsiveContainer from '../components/ResponsiveContainer';
 import { motion } from 'framer-motion';
-import { triggerHaptic } from '../utils/haptics';
 
 export default function CustomerHome() {
   const { 

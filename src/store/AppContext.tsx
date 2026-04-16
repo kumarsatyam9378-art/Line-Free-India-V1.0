@@ -408,6 +408,7 @@ export interface CustomerProfile {
   pets?: PetProfile[];
   loyaltyPoints?: number;
   currentStreak?: number;
+  lastVisitDate?: string;
   notiPush?: boolean;
   notiWhatsapp?: boolean;
   notiQuiet?: boolean;
@@ -528,6 +529,9 @@ interface AppContextType {
   requestNotificationPermission: () => Promise<void>;
   getCategoryInfo: (cat: BusinessCategory) => BusinessCategoryInfo;
   t: (key: string) => string;
+  awardLoyaltyPoints: (customerId: string, points: number, reason: string) => Promise<void>;
+  updateDailyStreak: (customerId: string) => Promise<void>;
+  processReferral: (newCustomerId: string, referralCode: string) => Promise<void>;
   // ── Legacy backward-compat aliases ──
   allSalons: BusinessProfile[];
   barberProfile: BusinessProfile | null;
@@ -1014,6 +1018,114 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const rateToken = async (tokenId: string, rating: number) => { try { await updateDoc(doc(db, 'tokens', tokenId), { rating }); } catch {} };
 
+  // ═══════════════════════════════════════════
+  // LOYALTY POINTS SYSTEM
+  // ═══════════════════════════════════════════
+  const awardLoyaltyPoints = async (customerId: string, points: number, reason: string) => {
+    if (!customerId || points <= 0) return;
+    try {
+      const customerRef = doc(db, 'customers', customerId);
+      const customerSnap = await getDoc(customerRef);
+      if (customerSnap.exists()) {
+        const currentPoints = customerSnap.data().loyaltyPoints || 0;
+        await updateDoc(customerRef, { 
+          loyaltyPoints: currentPoints + points 
+        });
+        
+        // Update local state if it's the current user
+        if (customerProfile?.uid === customerId) {
+          setCustomerProfile({
+            ...customerProfile,
+            loyaltyPoints: currentPoints + points
+          });
+        }
+        
+        // Log the points transaction
+        await addDoc(collection(db, 'loyaltyTransactions'), {
+          customerId,
+          points,
+          reason,
+          timestamp: Date.now(),
+          createdAt: new Date().toISOString()
+        });
+        
+        console.log(`✅ Awarded ${points} points to ${customerId} for: ${reason}`);
+      }
+    } catch (e) {
+      console.error('awardLoyaltyPoints error:', e);
+    }
+  };
+
+  const updateDailyStreak = async (customerId: string) => {
+    if (!customerId) return;
+    try {
+      const customerRef = doc(db, 'customers', customerId);
+      const customerSnap = await getDoc(customerRef);
+      if (customerSnap.exists()) {
+        const data = customerSnap.data();
+        const lastVisit = data.lastVisitDate;
+        const today = getTodayStr();
+        
+        let newStreak = data.currentStreak || 0;
+        
+        // Check if last visit was yesterday
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth()+1).padStart(2,'0')}-${String(yesterday.getDate()).padStart(2,'0')}`;
+        
+        if (lastVisit === yesterdayStr) {
+          // Continue streak
+          newStreak += 1;
+          await awardLoyaltyPoints(customerId, 10, 'Daily streak bonus');
+        } else if (lastVisit !== today) {
+          // Reset streak if more than 1 day gap
+          newStreak = 1;
+        }
+        
+        await updateDoc(customerRef, {
+          currentStreak: newStreak,
+          lastVisitDate: today
+        });
+        
+        // Update local state
+        if (customerProfile?.uid === customerId) {
+          setCustomerProfile({
+            ...customerProfile,
+            currentStreak: newStreak,
+            lastVisitDate: today
+          });
+        }
+      }
+    } catch (e) {
+      console.error('updateDailyStreak error:', e);
+    }
+  };
+
+  const processReferral = async (newCustomerId: string, referralCode: string) => {
+    if (!newCustomerId || !referralCode) return;
+    try {
+      // Find the referrer by referral code
+      const customersSnap = await getDocs(query(collection(db, 'customers'), where('referralCode', '==', referralCode)));
+      if (!customersSnap.empty) {
+        const referrer = customersSnap.docs[0];
+        const referrerId = referrer.id;
+        
+        // Award 100 points to the referrer
+        await awardLoyaltyPoints(referrerId, 100, 'Referred a friend');
+        
+        // Update the new customer's referredBy field
+        await updateDoc(doc(db, 'customers', newCustomerId), {
+          referredBy: referrerId
+        });
+        
+        console.log(`✅ Referral processed: ${referrerId} referred ${newCustomerId}`);
+      }
+    } catch (e) {
+      console.error('processReferral error:', e);
+    }
+  };
+
+
   const nextCustomer = async () => {
     if (!businessProfile || !user) return;
     const today = getTodayStr();
@@ -1025,7 +1137,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (!a.isTatkal && b.isTatkal) return 1;
         return a.tokenNumber - b.tokenNumber;
       });
-      await Promise.all(serving.map(t => updateDoc(doc(db, 'tokens', t.id!), { status: 'done' })));
+      
+      // Award loyalty points for completed visits
+      await Promise.all(serving.map(async (t) => {
+        await updateDoc(doc(db, 'tokens', t.id!), { status: 'done' });
+        // Award 50 points for completing a visit
+        if (t.customerId) {
+          await awardLoyaltyPoints(t.customerId, 50, 'Completed visit');
+          await updateDailyStreak(t.customerId);
+        }
+      }));
+      
       if (waiting.length > 0) {
         const next = waiting[0];
         await updateDoc(doc(db, 'tokens', next.id!), { status: 'serving' });
@@ -1104,6 +1226,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const avg = all.reduce((s, r) => s + r.rating, 0) / all.length;
       await updateDoc(doc(db, 'barbers', review.salonId), { rating: Math.round(avg * 10) / 10, totalReviews: all.length });
       try { await pushNotification(review.salonId, { title: '⭐ New Review!', body: `${review.customerName} gave ${review.rating} stars`, type: 'review' }); } catch {}
+      
+      // Award 25 points for leaving a review
+      if (review.customerId) {
+        await awardLoyaltyPoints(review.customerId, 25, 'Left a review');
+      }
     } catch {}
   };
 
@@ -1240,6 +1367,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       toggleFavorite, isFavorite, getUserLocation, requestNotificationPermission,
       getCategoryInfo,
       t,
+      awardLoyaltyPoints, updateDailyStreak, processReferral,
       // ── Legacy backward-compat aliases ──
       allSalons: allBusinesses,
       barberProfile: businessProfile,
