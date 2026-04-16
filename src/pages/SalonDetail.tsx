@@ -39,7 +39,7 @@ export default function SalonDetail() {
   const [reviewImages, setReviewImages] = useState<string[]>([]);
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewStaffId, setReviewStaffId] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'services' | 'store' | 'reviews' | 'portfolio'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'store' | 'reviews' | 'portfolio' | 'about' | 'gallery'>('services');
   const [advanceDate, setAdvanceDate] = useState('');
   const [isTatkal, setIsTatkal] = useState(false);
   const [groupSize, setGroupSize] = useState(1);
@@ -679,7 +679,9 @@ export default function SalonDetail() {
         <div className="flex gap-4 mb-10 overflow-x-auto no-scrollbar pb-4 px-1">
           {[
             { id: 'services', label: catInfo.hasMenu ? 'The Menu' : 'Services', icon: '📋' },
-            { id: 'portfolio', label: 'Gallery', icon: '📸', show: catInfo.id === 'photography' && business.portfolioImages?.length > 0 },
+            { id: 'about', label: 'About', icon: '📖', show: business.about },
+            { id: 'gallery', label: 'Gallery', icon: '🖼️', show: business.galleryImages && business.galleryImages.length > 0 },
+            { id: 'portfolio', label: 'Portfolio', icon: '📸', show: catInfo.id === 'photography' && business.portfolioImages?.length > 0 },
             { id: 'store', label: 'Boutique', icon: '🛍️', show: business.products?.length > 0 },
             { id: 'reviews', label: 'Community', icon: '⭐' }
           ].filter(t => t.show !== false).map((tab) => (
@@ -1148,6 +1150,34 @@ export default function SalonDetail() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* About Tab */}
+        {activeTab === 'about' && business.about && (
+          <div className="animate-fadeIn">
+            <div className="p-6 rounded-3xl elite-glass border-white/5 spatial-card">
+              <h3 className="text-xl font-black mb-4 flex items-center gap-2">
+                <span className="text-2xl">📖</span>
+                About {business.businessName}
+              </h3>
+              <div className="prose prose-invert max-w-none">
+                <p className="text-text-dim leading-relaxed whitespace-pre-wrap">{business.about}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Gallery Tab */}
+        {activeTab === 'gallery' && business.galleryImages && business.galleryImages.length > 0 && (
+          <div className="animate-fadeIn">
+            <div className="grid grid-cols-2 gap-3 pb-8">
+              {business.galleryImages.map((img, i) => (
+                <div key={i} className="rounded-2xl overflow-hidden elite-glass border-white/10 aspect-square shadow-sm spatial-card">
+                  <img src={img} className="w-full h-full object-cover" alt={`Gallery ${i + 1}`} />
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
